@@ -37,7 +37,7 @@ pub fn run_legacy_patcher_loop(
     api.init()?;
     tracing::info!("Legacy patcher: set_config(prefix='{}')", overlay_root);
     api.set_config(overlay_root)?;
-    api.set_log_level(CSLogLevel::Trace)?;
+    api.set_log_level(CSLogLevel::Info)?;
 
     if let Some(log_path) = log_file {
         tracing::info!("Legacy patcher: set_log_file('{}')", log_path);
