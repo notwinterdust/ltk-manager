@@ -73,7 +73,7 @@ fn main() {
     #[cfg(not(debug_assertions))]
     let (_file_guard, log_path) = init_logging();
 
-    tracing::info!("Starting LTK Manager");
+    tracing::info!("Starting LTK Manager v{}", env!("CARGO_PKG_VERSION"));
     if let Some(ref p) = log_path {
         tracing::info!("Log directory: {}", p.display());
         cleanup_old_logs(p, 7);
