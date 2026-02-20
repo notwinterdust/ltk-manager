@@ -26,6 +26,11 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - &install-linux-deps
+        name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
       - &install-rust
         name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -47,6 +52,7 @@ jobs:
       releases: ${{ steps.release.outputs.releases }}
     steps:
       - *checkout
+      - *install-linux-deps
       - *install-rust
       - name: Run release-plz
         id: release
