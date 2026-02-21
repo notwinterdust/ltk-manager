@@ -49,8 +49,13 @@ fi
 sed -i "0,/^version = \".*\"/s//version = \"${VERSION}\"/" src-tauri/Cargo.toml
 
 # Update tauri.conf.json version
-CONF=$(cat src-tauri/tauri.conf.json)
-echo "$CONF" | jq --arg v "$VERSION" '.version = $v' > src-tauri/tauri.conf.json
+node -e "
+  const fs = require('fs');
+  const path = 'src-tauri/tauri.conf.json';
+  const conf = JSON.parse(fs.readFileSync(path, 'utf8'));
+  conf.version = process.argv[1];
+  fs.writeFileSync(path, JSON.stringify(conf, null, 2) + '\n');
+" "$VERSION"
 
 echo "Bumped version to ${VERSION}"
 
