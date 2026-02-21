@@ -82,6 +82,9 @@ impl Workshop {
             description: args.description,
             authors,
             license: None,
+            tags: Vec::new(),
+            champions: Vec::new(),
+            maps: Vec::new(),
             transformers: Vec::new(),
             layers: default_layers(),
             thumbnail: None,
@@ -275,6 +278,17 @@ impl Workshop {
                 .map(|a| ModProjectAuthor::Name(a.name))
                 .collect(),
             license: None,
+            tags: metadata
+                .tags
+                .into_iter()
+                .map(ltk_mod_project::ModTag::from)
+                .collect(),
+            champions: metadata.champions,
+            maps: metadata
+                .maps
+                .into_iter()
+                .map(ltk_mod_project::ModMap::from)
+                .collect(),
             transformers: Vec::new(),
             layers,
             thumbnail: None,

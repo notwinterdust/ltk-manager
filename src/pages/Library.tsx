@@ -5,6 +5,7 @@ import {
   ImportProgressDialog,
   LibraryContent,
   LibraryToolbar,
+  useFilterOptions,
   useInstalledMods,
   useLibraryActions,
   useModFileDrop,
@@ -25,6 +26,7 @@ export function Library() {
   const isStarting = patcherStatus?.phase === "building";
   const isPatcherActive = patcherStatus?.running ?? false;
 
+  const filterOptions = useFilterOptions(mods);
   const hasEnabledMods = mods.some((m) => m.enabled);
 
   function handleStartPatcher() {
@@ -60,6 +62,7 @@ export function Library() {
           onStart: handleStartPatcher,
           onStop: handleStopPatcher,
         }}
+        filterOptions={filterOptions}
         hasEnabledMods={hasEnabledMods}
         isLoading={isLoading}
         isPatcherActive={isPatcherActive}

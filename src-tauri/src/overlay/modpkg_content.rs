@@ -56,6 +56,9 @@ impl<R: Read + Seek + Send> ModContentProvider for ModpkgContent<R> {
                 .map(|a| ModProjectAuthor::Name(a.name))
                 .collect(),
             license: None,
+            tags: Vec::new(),
+            champions: Vec::new(),
+            maps: Vec::new(),
             transformers: Vec::new(),
             layers,
             thumbnail: None,

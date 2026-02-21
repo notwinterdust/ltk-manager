@@ -45,6 +45,9 @@ export interface InstalledMod {
   enabled: boolean;
   installedAt: string;
   layers: ModLayer[];
+  tags: string[];
+  champions: string[];
+  maps: string[];
   modDir: string;
 }
 

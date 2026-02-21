@@ -1,7 +1,7 @@
 use crate::error::{AppError, AppResult};
 use crate::state::Settings;
 use chrono::Utc;
-use ltk_mod_project::{ModProject, ModProjectLayer};
+use ltk_mod_project::{ModMap, ModProject, ModProjectLayer, ModTag};
 use ltk_modpkg::Modpkg;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -460,6 +460,9 @@ fn read_installed_mod(
         enabled,
         installed_at: entry.installed_at,
         layers,
+        tags: project.tags.iter().map(|t| t.to_string()).collect(),
+        champions: project.champions.clone(),
+        maps: project.maps.iter().map(|m| m.to_string()).collect(),
         mod_dir: mod_dir.display().to_string(),
     })
 }
@@ -551,6 +554,9 @@ fn extract_fantome_metadata(file_path: &Path, metadata_dir: &Path) -> AppResult<
         description: info.description,
         authors: vec![ltk_mod_project::ModProjectAuthor::Name(info.author)],
         license: None,
+        tags: info.tags.into_iter().map(ModTag::from).collect(),
+        champions: info.champions,
+        maps: info.maps.into_iter().map(ModMap::from).collect(),
         transformers: Vec::new(),
         layers,
         thumbnail: None,
@@ -626,6 +632,9 @@ fn extract_modpkg_metadata(file_path: &Path, metadata_dir: &Path) -> AppResult<(
             .map(|a| ltk_mod_project::ModProjectAuthor::Name(a.name))
             .collect(),
         license: None,
+        tags: metadata.tags.into_iter().map(ModTag::from).collect(),
+        champions: metadata.champions,
+        maps: metadata.maps.into_iter().map(ModMap::from).collect(),
         transformers: Vec::new(),
         layers,
         thumbnail: None,

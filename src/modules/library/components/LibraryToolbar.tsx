@@ -2,10 +2,13 @@ import { LuFolderOpen, LuGrid3X3, LuList, LuPlus, LuSearch } from "react-icons/l
 
 import { Button, IconButton } from "@/components";
 import type { PatcherStatus } from "@/lib/tauri";
+import type { FilterOptions } from "@/modules/library/api";
 import type { useLibraryActions } from "@/modules/library/api";
 import { useLibraryViewMode } from "@/modules/library/api";
 
+import { FilterPopover } from "./FilterPopover";
 import { ProfileSelector } from "./ProfileSelector";
+import { SortDropdown } from "./SortDropdown";
 
 interface PatcherProps {
   status: PatcherStatus | undefined;
@@ -20,6 +23,7 @@ interface LibraryToolbarProps {
   onSearchChange: (query: string) => void;
   actions: ReturnType<typeof useLibraryActions>;
   patcher: PatcherProps;
+  filterOptions: FilterOptions;
   hasEnabledMods: boolean;
   isLoading: boolean;
   isPatcherActive: boolean;
@@ -30,6 +34,7 @@ export function LibraryToolbar({
   onSearchChange,
   actions,
   patcher,
+  filterOptions,
   hasEnabledMods,
   isLoading,
   isPatcherActive,
@@ -62,6 +67,9 @@ export function LibraryToolbar({
           className="w-full rounded-lg border border-surface-600 bg-surface-800 py-2 pr-4 pl-10 text-surface-100 placeholder:text-surface-500 focus:border-transparent focus:ring-2 focus:ring-brand-500 focus:outline-none"
         />
       </div>
+
+      <FilterPopover filterOptions={filterOptions} />
+      <SortDropdown />
 
       {/* View toggle */}
       <div className="flex items-center gap-1">
