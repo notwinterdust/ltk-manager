@@ -826,7 +826,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -996,7 +996,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2330,7 +2330,7 @@ dependencies = [
 [[package]]
 name = "ltk_fantome"
 version = "0.2.0"
-source = "git+https://github.com/LeagueToolkit/league-mod#82114a6972cfe4084ca26d2a0d19a05f0c56af43"
+source = "git+https://github.com/LeagueToolkit/league-mod#1f3c5597743547537a8acd93d59148eba701ce99"
 dependencies = [
  "camino",
  "eyre",
@@ -2382,7 +2382,7 @@ dependencies = [
 [[package]]
 name = "ltk_mod_core"
 version = "0.1.0"
-source = "git+https://github.com/LeagueToolkit/league-mod#82114a6972cfe4084ca26d2a0d19a05f0c56af43"
+source = "git+https://github.com/LeagueToolkit/league-mod#1f3c5597743547537a8acd93d59148eba701ce99"
 dependencies = [
  "camino",
  "serde",
@@ -2394,7 +2394,7 @@ dependencies = [
 [[package]]
 name = "ltk_mod_project"
 version = "0.2.0"
-source = "git+https://github.com/LeagueToolkit/league-mod#82114a6972cfe4084ca26d2a0d19a05f0c56af43"
+source = "git+https://github.com/LeagueToolkit/league-mod#1f3c5597743547537a8acd93d59148eba701ce99"
 dependencies = [
  "serde",
  "serde_json",
@@ -2404,7 +2404,7 @@ dependencies = [
 [[package]]
 name = "ltk_modpkg"
 version = "0.2.0"
-source = "git+https://github.com/LeagueToolkit/league-mod#82114a6972cfe4084ca26d2a0d19a05f0c56af43"
+source = "git+https://github.com/LeagueToolkit/league-mod#1f3c5597743547537a8acd93d59148eba701ce99"
 dependencies = [
  "binrw",
  "byteorder",
@@ -2428,8 +2428,8 @@ dependencies = [
 
 [[package]]
 name = "ltk_overlay"
-version = "0.1.0"
-source = "git+https://github.com/LeagueToolkit/league-mod#82114a6972cfe4084ca26d2a0d19a05f0c56af43"
+version = "0.1.1"
+source = "git+https://github.com/LeagueToolkit/league-mod#1f3c5597743547537a8acd93d59148eba701ce99"
 dependencies = [
  "byteorder",
  "camino",
@@ -2717,7 +2717,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2792,7 +2792,7 @@ version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff32365de1b6743cb203b710788263c44a03de03802daf96092f2da4fe6ba4d7"
 dependencies = [
- "proc-macro-crate 3.4.0",
+ "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
  "syn 2.0.117",
@@ -3059,7 +3059,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.45.0",
 ]
 
 [[package]]
@@ -3412,15 +3412,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e8366a6159044a37876a2b9817124296703c586a5c92e2c53751fa06d8d43e8"
 dependencies = [
  "toml_edit 0.20.7",
-]
-
-[[package]]
-name = "proc-macro-crate"
-version = "3.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "219cb19e96be00ab2e37d6e299658a0cfa83e52429179969b0f0121b4ac46983"
-dependencies = [
- "toml_edit 0.23.10+spec-1.0.0",
 ]
 
 [[package]]
@@ -3948,7 +3939,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4004,7 +3995,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5071,7 +5062,7 @@ dependencies = [
  "getrandom 0.4.1",
  "once_cell",
  "rustix",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5318,18 +5309,6 @@ dependencies = [
  "serde_spanned 0.6.9",
  "toml_datetime 0.6.11",
  "toml_write",
- "winnow 0.7.14",
-]
-
-[[package]]
-name = "toml_edit"
-version = "0.23.10+spec-1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84c8b9f757e028cee9fa244aea147aab2a9ec09d5325a9b01e0a49730c2b5269"
-dependencies = [
- "indexmap 2.13.0",
- "toml_datetime 0.7.5+spec-1.1.0",
- "toml_parser",
  "winnow 0.7.14",
 ]
 
@@ -5998,7 +5977,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
