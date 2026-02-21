@@ -1,21 +1,3 @@
-[workspace]
-release_always = false
-changelog_update = true
-git_tag_enable = true
-git_release_enable = true
-git_tag_name = "v{{ version }}"
-git_release_name = "LTK Manager v{{ version }}"
-git_release_body = "{{ changelog }}"
-git_release_type = "auto"
-
-[[package]]
-name = "ltk-manager"
-publish = false
-publish_no_verify = true
-git_only = true
-semver_check = false
-changelog_update = true
-
 [changelog]
 header = """
 # Changelog
@@ -26,8 +8,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 """
-tag_pattern = "v[0-9].*"
-sort_commits = "newest"
+body = """
+{%- macro remote_url() -%}
+  https://github.com/LeagueToolkit/ltk-manager
+{%- endmacro -%}
+
+{% if version -%}
+## [{{ version | trim_start_matches(pat="v") }}]({{ self::remote_url() }}/releases/tag/{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## [Unreleased]
+{% endif -%}
+
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | striptags | trim | upper_first }}
+{% for commit in commits %}
+- {{ commit.message | split(pat="\n") | first | trim }}
+{%- endfor %}
+{% endfor %}
+"""
+footer = ""
+trim = true
+postprocessors = []
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+split_commits = false
 commit_parsers = [
     { message = "^chore: release", skip = true },
     { message = "^chore: bump version", skip = true },
@@ -40,3 +46,5 @@ commit_parsers = [
     { message = "^docs", group = "Documentation" },
     { message = ".*", group = "Other" },
 ]
+tag_pattern = "v[0-9].*"
+sort_commits = "newest"
