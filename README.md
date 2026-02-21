@@ -10,9 +10,9 @@ The next-generation mod manager for League of Legends, built by the [League Tool
 
 ## 📸 Screenshots
 
-|                 Mod Library                  |                  Workshop                  |                  Settings                  |
-| :------------------------------------------: | :----------------------------------------: | :----------------------------------------: |
-| ![Mod Library](docs/screenshots/library.png) | ![Workshop](docs/screenshots/workshop.png) | ![Settings](docs/screenshots/settings.png) |
+|                  Mod Library                  |                  Workshop                   |                  Settings                   |
+| :-------------------------------------------: | :-----------------------------------------: | :-----------------------------------------: |
+| ![Mod Library](docs/screenshots/library.webp) | ![Workshop](docs/screenshots/workshop.webp) | ![Settings](docs/screenshots/settings.webp) |
 
 ---
 
