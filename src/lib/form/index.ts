@@ -1,6 +1,6 @@
 import { createFormHook, formOptions } from "@tanstack/react-form";
 
-import { SelectField, SubmitButton, TextareaField, TextField } from "./components";
+import { ComboboxField, SelectField, SubmitButton, TextareaField, TextField } from "./components";
 import { fieldContext, formContext, useFieldContext, useFormContext } from "./form-context";
 
 // Create the app-wide form hook with pre-bound components
@@ -9,6 +9,7 @@ const { useAppForm, withForm } = createFormHook({
   fieldContext,
   formContext,
   fieldComponents: {
+    ComboboxField,
     TextField,
     TextareaField,
     SelectField,
@@ -20,8 +21,9 @@ const { useAppForm, withForm } = createFormHook({
 
 // Re-export everything for convenient imports
 export {
-  formOptions,
   // Pre-built field components
+  ComboboxField,
+  formOptions,
   SelectField,
   SubmitButton,
   TextareaField,

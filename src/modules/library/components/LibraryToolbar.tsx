@@ -6,6 +6,7 @@ import type { useLibraryActions } from "@/modules/library/api";
 import { useLibraryViewMode } from "@/modules/library/api";
 
 import { ProfileSelector } from "./ProfileSelector";
+import { SortDropdown } from "./SortDropdown";
 
 interface PatcherProps {
   status: PatcherStatus | undefined;
@@ -62,6 +63,8 @@ export function LibraryToolbar({
           className="w-full rounded-lg border border-surface-600 bg-surface-800 py-2 pr-4 pl-10 text-surface-100 placeholder:text-surface-500 focus:border-transparent focus:ring-2 focus:ring-brand-500 focus:outline-none"
         />
       </div>
+
+      <SortDropdown />
 
       {/* View toggle */}
       <div className="flex items-center gap-1">

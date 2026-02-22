@@ -1,11 +1,12 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { LuCheck, LuImage, LuPencil, LuPlus, LuTrash2, LuX } from "react-icons/lu";
 
-import { Button, IconButton, useToast } from "@/components";
+import { Button, IconButton, MultiSelect, type MultiSelectOption, useToast } from "@/components";
 import { useAppForm } from "@/lib/form";
 import type { WorkshopAuthor } from "@/lib/tauri";
+import { getMapLabel, getTagLabel, WELL_KNOWN_MAPS, WELL_KNOWN_TAGS } from "@/modules/library";
 import {
   useProjectContext,
   useProjectThumbnail,
@@ -34,6 +35,19 @@ function ProjectOverview() {
     project.authors.length > 0 ? project.authors : [{ name: "", role: "" }],
   );
 
+  const [selectedTags, setSelectedTags] = useState<Set<string>>(() => new Set(project.tags));
+  const [selectedMaps, setSelectedMaps] = useState<Set<string>>(() => new Set(project.maps));
+  const [championsText, setChampionsText] = useState(() => project.champions.join(", "));
+
+  const tagOptions = useMemo<MultiSelectOption[]>(
+    () => WELL_KNOWN_TAGS.map((v) => ({ value: v, label: getTagLabel(v) })),
+    [],
+  );
+  const mapOptions = useMemo<MultiSelectOption[]>(
+    () => WELL_KNOWN_MAPS.map((v) => ({ value: v, label: getMapLabel(v) })),
+    [],
+  );
+
   const form = useAppForm({
     defaultValues: {
       displayName: project.displayName,
@@ -42,6 +56,10 @@ function ProjectOverview() {
     },
     onSubmit: ({ value }) => {
       const filteredAuthors = authors.filter((a) => a.name.trim());
+      const champions = championsText
+        .split(",")
+        .map((c) => c.trim())
+        .filter(Boolean);
       saveConfig.mutate(
         {
           projectPath: project.path,
@@ -49,6 +67,9 @@ function ProjectOverview() {
           version: value.version,
           description: value.description,
           authors: filteredAuthors,
+          tags: [...selectedTags],
+          champions,
+          maps: [...selectedMaps],
         },
         {
           onSuccess: () => {
@@ -177,6 +198,52 @@ function ProjectOverview() {
               />
             )}
           </form.AppField>
+        </div>
+      </div>
+
+      {/* Categorization */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-sm font-medium text-surface-200">Categorization</h3>
+          <p className="text-xs text-surface-400">
+            Help users find your mod by adding tags, maps, and champions.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-surface-300">Tags</label>
+            <MultiSelect
+              variant="field"
+              options={tagOptions}
+              selected={selectedTags}
+              onChange={setSelectedTags}
+              label="Select tags..."
+              placeholder="Search tags..."
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-surface-300">Maps</label>
+            <MultiSelect
+              variant="field"
+              options={mapOptions}
+              selected={selectedMaps}
+              onChange={setSelectedMaps}
+              label="Select maps..."
+              placeholder="Search maps..."
+            />
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <label className="text-xs font-medium text-surface-300">Champions</label>
+            <input
+              type="text"
+              value={championsText}
+              onChange={(e) => setChampionsText(e.target.value)}
+              placeholder="Aatrox, Ahri, Zed..."
+              className="w-full rounded-lg border border-surface-500 bg-surface-700 px-4 py-2.5 text-sm text-surface-50 transition-colors placeholder:text-surface-400 hover:border-surface-400 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none"
+            />
+            <p className="text-xs text-surface-400">Comma-separated champion names.</p>
+          </div>
         </div>
       </div>
 

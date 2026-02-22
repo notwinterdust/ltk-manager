@@ -2,20 +2,9 @@ import { invoke } from "@tauri-apps/api/core";
 import { LuCopy, LuEllipsisVertical, LuFolderOpen, LuInfo, LuTrash2 } from "react-icons/lu";
 
 import { IconButton, Menu, Switch, useToast } from "@/components";
+import type { InstalledMod } from "@/lib/tauri";
 import { useModThumbnail } from "@/modules/library/api/useModThumbnail";
-
-interface InstalledMod {
-  id: string;
-  name: string;
-  displayName: string;
-  version: string;
-  description?: string;
-  authors: string[];
-  enabled: boolean;
-  installedAt: string;
-  layers: { name: string; priority: number; enabled: boolean }[];
-  modDir: string;
-}
+import { getTagLabel } from "@/modules/library/utils/labels";
 
 interface ModCardProps {
   mod: InstalledMod;
@@ -85,9 +74,12 @@ export function ModCard({
         {/* Info */}
         <div className="min-w-0 flex-1">
           <h3 className="truncate font-medium text-surface-100">{mod.displayName}</h3>
-          <p className="truncate text-sm text-surface-500">
-            v{mod.version} • {mod.authors.join(", ") || "Unknown author"}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="truncate text-sm text-surface-500">
+              v{mod.version} • {mod.authors.join(", ") || "Unknown author"}
+            </p>
+            <ModPills mod={mod} max={3} />
+          </div>
         </div>
 
         {/* Toggle */}
@@ -193,6 +185,8 @@ export function ModCard({
           {mod.displayName}
         </h3>
 
+        <ModPills mod={mod} max={3} className="mb-1" />
+
         {/* Version, author, and menu on same row */}
         <div className="flex items-center text-xs text-surface-500">
           <span>v{mod.version}</span>
@@ -247,6 +241,36 @@ export function ModCard({
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ModPills({ mod, max, className }: { mod: InstalledMod; max: number; className?: string }) {
+  const pills = [
+    ...mod.tags.map((t) => ({ label: getTagLabel(t), color: "brand" as const })),
+    ...mod.champions.map((c) => ({ label: c, color: "emerald" as const })),
+  ];
+  if (pills.length === 0) return null;
+
+  const visible = pills.slice(0, max);
+  const overflow = pills.length - max;
+
+  const colorClasses = {
+    brand: "bg-brand-500/15 text-brand-400",
+    emerald: "bg-emerald-500/15 text-emerald-400",
+  } as const;
+
+  return (
+    <div className={`flex flex-wrap items-center gap-1 ${className ?? ""}`}>
+      {visible.map((pill) => (
+        <span
+          key={`${pill.color}:${pill.label}`}
+          className={`rounded px-1.5 py-0.5 text-[10px] leading-tight ${colorClasses[pill.color]}`}
+        >
+          {pill.label}
+        </span>
+      ))}
+      {overflow > 0 && <span className="text-[10px] text-surface-500">+{overflow}</span>}
     </div>
   );
 }

@@ -45,6 +45,9 @@ export interface InstalledMod {
   enabled: boolean;
   installedAt: string;
   layers: ModLayer[];
+  tags: string[];
+  champions: string[];
+  maps: string[];
   modDir: string;
 }
 
@@ -128,6 +131,9 @@ export interface WorkshopProject {
   version: string;
   description: string;
   authors: WorkshopAuthor[];
+  tags: string[];
+  champions: string[];
+  maps: string[];
   layers: WorkshopLayer[];
   thumbnailPath?: string;
   lastModified: string;
@@ -158,6 +164,9 @@ export interface SaveProjectConfigArgs {
   version: string;
   description: string;
   authors: WorkshopAuthor[];
+  tags: string[];
+  champions: string[];
+  maps: string[];
 }
 
 export interface PackProjectArgs {

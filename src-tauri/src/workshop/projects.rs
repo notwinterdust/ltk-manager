@@ -4,7 +4,9 @@ use super::{
 };
 use crate::error::{AppError, AppResult};
 use crate::state::Settings;
-use ltk_mod_project::{default_layers, ModProject, ModProjectAuthor, ModProjectLayer};
+use ltk_mod_project::{
+    default_layers, ModMap, ModProject, ModProjectAuthor, ModProjectLayer, ModTag,
+};
 use std::fs;
 use std::path::PathBuf;
 
@@ -82,6 +84,9 @@ impl Workshop {
             description: args.description,
             authors,
             license: None,
+            tags: Vec::new(),
+            champions: Vec::new(),
+            maps: Vec::new(),
             transformers: Vec::new(),
             layers: default_layers(),
             thumbnail: None,
@@ -131,6 +136,9 @@ impl Workshop {
                 None => ModProjectAuthor::Name(a.name),
             })
             .collect();
+        mod_project.tags = args.tags.into_iter().map(ModTag::from).collect();
+        mod_project.champions = args.champions;
+        mod_project.maps = args.maps.into_iter().map(ModMap::from).collect();
 
         let json_config_path = path.join("mod.config.json");
         let config_content = serde_json::to_string_pretty(&mod_project)?;
@@ -275,6 +283,17 @@ impl Workshop {
                 .map(|a| ModProjectAuthor::Name(a.name))
                 .collect(),
             license: None,
+            tags: metadata
+                .tags
+                .into_iter()
+                .map(ltk_mod_project::ModTag::from)
+                .collect(),
+            champions: metadata.champions,
+            maps: metadata
+                .maps
+                .into_iter()
+                .map(ltk_mod_project::ModMap::from)
+                .collect(),
             transformers: Vec::new(),
             layers,
             thumbnail: None,

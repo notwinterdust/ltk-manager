@@ -2,9 +2,11 @@ import { useState } from "react";
 
 import {
   DragDropOverlay,
+  FilterBar,
   ImportProgressDialog,
   LibraryContent,
   LibraryToolbar,
+  useFilterOptions,
   useInstalledMods,
   useLibraryActions,
   useModFileDrop,
@@ -25,6 +27,7 @@ export function Library() {
   const isStarting = patcherStatus?.phase === "building";
   const isPatcherActive = patcherStatus?.running ?? false;
 
+  const filterOptions = useFilterOptions(mods);
   const hasEnabledMods = mods.some((m) => m.enabled);
 
   function handleStartPatcher() {
@@ -64,6 +67,7 @@ export function Library() {
         isLoading={isLoading}
         isPatcherActive={isPatcherActive}
       />
+      <FilterBar filterOptions={filterOptions} />
       <LibraryContent
         mods={mods}
         searchQuery={searchQuery}

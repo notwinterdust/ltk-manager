@@ -56,6 +56,12 @@ pub struct WorkshopProject {
     pub description: String,
     /// List of authors
     pub authors: Vec<WorkshopAuthor>,
+    /// Categorization tags
+    pub tags: Vec<String>,
+    /// Champion names this mod applies to
+    pub champions: Vec<String>,
+    /// Map identifiers this mod applies to
+    pub maps: Vec<String>,
     /// Project layers
     pub layers: Vec<WorkshopLayer>,
     /// Path to thumbnail image if exists
@@ -100,6 +106,9 @@ pub struct SaveProjectConfigArgs {
     pub version: String,
     pub description: String,
     pub authors: Vec<WorkshopAuthor>,
+    pub tags: Vec<String>,
+    pub champions: Vec<String>,
+    pub maps: Vec<String>,
 }
 
 /// Arguments for packing a project.
@@ -215,6 +224,10 @@ pub(crate) fn load_workshop_project(project_dir: &Path) -> AppResult<WorkshopPro
         })
         .collect();
 
+    let tags = mod_project.tags.iter().map(|t| t.to_string()).collect();
+    let champions = mod_project.champions.clone();
+    let maps = mod_project.maps.iter().map(|m| m.to_string()).collect();
+
     Ok(WorkshopProject {
         path: project_dir.display().to_string(),
         name: mod_project.name,
@@ -222,6 +235,9 @@ pub(crate) fn load_workshop_project(project_dir: &Path) -> AppResult<WorkshopPro
         version: mod_project.version,
         description: mod_project.description,
         authors,
+        tags,
+        champions,
+        maps,
         layers,
         thumbnail_path,
         last_modified,

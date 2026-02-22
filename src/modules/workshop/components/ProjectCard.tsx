@@ -26,7 +26,6 @@ export function ProjectCard({ project, viewMode, onEdit, onPack, onDelete }: Pro
   }
 
   function handleCardClick(e: React.MouseEvent) {
-    // Don't trigger if clicking on menu
     if ((e.target as HTMLElement).closest("[data-no-click]")) {
       return;
     }
@@ -59,7 +58,7 @@ export function ProjectCard({ project, viewMode, onEdit, onPack, onDelete }: Pro
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2" data-no-click>
+        <div className="flex items-center gap-2" data-no-click onClick={(e) => e.stopPropagation()}>
           <Button
             variant="outline"
             size="sm"
@@ -123,7 +122,11 @@ export function ProjectCard({ project, viewMode, onEdit, onPack, onDelete }: Pro
       className="group relative cursor-pointer rounded-xl border border-surface-600 bg-surface-800 transition-all hover:border-surface-400"
     >
       {/* Menu in top-right corner */}
-      <div className="absolute top-2 right-2 z-10" data-no-click>
+      <div
+        className="absolute top-2 right-2 z-10"
+        data-no-click
+        onClick={(e) => e.stopPropagation()}
+      >
         <Menu.Root>
           <Menu.Trigger
             render={

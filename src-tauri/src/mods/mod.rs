@@ -174,6 +174,9 @@ pub struct InstalledMod {
     pub enabled: bool,
     pub installed_at: DateTime<Utc>,
     pub layers: Vec<ModLayer>,
+    pub tags: Vec<String>,
+    pub champions: Vec<String>,
+    pub maps: Vec<String>,
     /// Directory where the mod is installed
     pub mod_dir: String,
 }

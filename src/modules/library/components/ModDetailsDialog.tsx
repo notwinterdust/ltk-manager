@@ -1,9 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
-import { LuCalendar, LuFolderOpen, LuLayers, LuUser } from "react-icons/lu";
+import { LuCalendar, LuFolderOpen, LuLayers, LuMap, LuSword, LuTag, LuUser } from "react-icons/lu";
 
 import { Button, Dialog } from "@/components";
 import type { InstalledMod } from "@/lib/tauri";
 import { useModThumbnail } from "@/modules/library/api/useModThumbnail";
+import { getMapLabel, getTagLabel } from "@/modules/library/utils/labels";
 
 interface ModDetailsDialogProps {
   open: boolean;
@@ -94,6 +95,66 @@ function ModDetailsContent({ mod }: { mod: InstalledMod }) {
             Description
           </h4>
           <p className="text-sm leading-relaxed text-surface-300">{mod.description}</p>
+        </div>
+      )}
+
+      {/* Tags */}
+      {mod.tags.length > 0 && (
+        <div>
+          <h4 className="mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wide text-surface-500 uppercase">
+            <LuTag className="h-3.5 w-3.5" />
+            Tags
+          </h4>
+          <div className="flex flex-wrap gap-1.5">
+            {mod.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-brand-500/15 px-2.5 py-0.5 text-xs text-brand-300"
+              >
+                {getTagLabel(tag)}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Champions */}
+      {mod.champions.length > 0 && (
+        <div>
+          <h4 className="mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wide text-surface-500 uppercase">
+            <LuSword className="h-3.5 w-3.5" />
+            Champions
+          </h4>
+          <div className="flex flex-wrap gap-1.5">
+            {mod.champions.map((champ) => (
+              <span
+                key={champ}
+                className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs text-emerald-300"
+              >
+                {champ}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Maps */}
+      {mod.maps.length > 0 && (
+        <div>
+          <h4 className="mb-2 flex items-center gap-1.5 text-xs font-medium tracking-wide text-surface-500 uppercase">
+            <LuMap className="h-3.5 w-3.5" />
+            Maps
+          </h4>
+          <div className="flex flex-wrap gap-1.5">
+            {mod.maps.map((map) => (
+              <span
+                key={map}
+                className="rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs text-sky-300"
+              >
+                {getMapLabel(map)}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 

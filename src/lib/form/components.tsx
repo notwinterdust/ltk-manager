@@ -2,6 +2,17 @@ import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
+  ComboboxEmpty,
+  ComboboxIcon,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  type ComboboxOption,
+  ComboboxPopup,
+  ComboboxPortal,
+  ComboboxPositioner,
+  ComboboxRoot,
+  ComboboxTrigger,
   Field,
   FieldControl,
   FieldDescription,
@@ -17,6 +28,7 @@ import {
   SelectRoot,
   SelectTrigger,
   SelectValue,
+  useComboboxFilter,
 } from "@/components";
 
 import { useFieldContext, useFormContext } from "./form-context";
@@ -129,7 +141,6 @@ export function SelectField({
   label,
   description,
   required,
-  placeholder,
   options,
   disabled,
   className,
@@ -148,7 +159,7 @@ export function SelectField({
         disabled={disabled}
       >
         <SelectTrigger hasError={hasError} className={triggerClassName}>
-          <SelectValue placeholder={placeholder} />
+          <SelectValue />
           <SelectIcon />
         </SelectTrigger>
         <SelectPortal>
@@ -163,6 +174,78 @@ export function SelectField({
           </SelectPositioner>
         </SelectPortal>
       </SelectRoot>
+      {hasError && <FieldError>{field.state.meta.errors.join(", ")}</FieldError>}
+    </FieldRoot>
+  );
+}
+
+// ComboboxField - Pre-bound combobox field component
+export interface ComboboxFieldProps {
+  label?: string;
+  description?: string;
+  required?: boolean;
+  placeholder?: string;
+  options: ComboboxOption[];
+  disabled?: boolean;
+  className?: string;
+  inputClassName?: string;
+}
+
+export function ComboboxField({
+  label,
+  description,
+  required,
+  placeholder,
+  options,
+  disabled,
+  className,
+  inputClassName,
+}: ComboboxFieldProps) {
+  const field = useFieldContext<string>();
+  const hasError = field.state.meta.errors.length > 0;
+  const filter = useComboboxFilter();
+
+  const selectedOption = options.find((o) => o.value === field.state.value);
+
+  return (
+    <FieldRoot className={className}>
+      {label && <FieldLabel required={required}>{label}</FieldLabel>}
+      {description && <FieldDescription>{description}</FieldDescription>}
+      <ComboboxRoot<ComboboxOption>
+        value={selectedOption}
+        onValueChange={(opt) => field.handleChange(opt?.value ?? "")}
+        disabled={disabled}
+        items={options}
+        filter={(item, query) => filter.contains(item, query, (o) => o.label)}
+        itemToStringLabel={(item) => item.label}
+        itemToStringValue={(item) => item.value}
+      >
+        <div className="relative">
+          <ComboboxInput
+            placeholder={placeholder}
+            hasError={hasError}
+            className={twMerge("pr-8", inputClassName)}
+            onBlur={field.handleBlur}
+          />
+          <ComboboxTrigger className="absolute top-0 right-0 flex h-full items-center pr-3">
+            <ComboboxIcon />
+          </ComboboxTrigger>
+        </div>
+        <ComboboxPortal>
+          <ComboboxPositioner>
+            <ComboboxPopup>
+              <ComboboxList>
+                {(item: ComboboxOption) => (
+                  <ComboboxItem key={item.value} value={item} disabled={item.disabled}>
+                    {item.label}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+              <ComboboxEmpty />
+            </ComboboxPopup>
+          </ComboboxPositioner>
+        </ComboboxPortal>
+      </ComboboxRoot>
       {hasError && <FieldError>{field.state.meta.errors.join(", ")}</FieldError>}
     </FieldRoot>
   );

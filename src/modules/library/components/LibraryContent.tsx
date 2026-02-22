@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { LuPlus, LuSearch, LuUpload } from "react-icons/lu";
+import { LuFilter, LuPlus, LuSearch, LuUpload } from "react-icons/lu";
 
 import { Button } from "@/components";
 import type { AppError, InstalledMod } from "@/lib/tauri";
 import type { useLibraryActions } from "@/modules/library/api";
-import { useLibraryViewMode } from "@/modules/library/api";
+import { useFilteredMods, useLibraryViewMode } from "@/modules/library/api";
+import { useHasActiveFilters, useLibraryFilterStore } from "@/stores";
 
 import { ModCard } from "./ModCard";
 import { ModDetailsDialog } from "./ModDetailsDialog";
@@ -37,13 +38,13 @@ export function LibraryContent({
 }: LibraryContentProps) {
   const { viewMode } = useLibraryViewMode();
   const [detailsMod, setDetailsMod] = useState<InstalledMod | null>(null);
-  const isSearching = searchQuery.length > 0;
+  const filteredMods = useFilteredMods(mods, searchQuery);
+  const hasActiveFilters = useHasActiveFilters();
+  const { sort } = useLibraryFilterStore();
 
-  const filteredMods = mods.filter(
-    (mod) =>
-      mod.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      mod.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const isSearching = searchQuery.length > 0;
+  const isPrioritySort = sort.field === "priority";
+  const dndDisabled = isSearching || isPatcherActive || !isPrioritySort || hasActiveFilters;
 
   if (isLoading) {
     return (
@@ -64,12 +65,12 @@ export function LibraryContent({
   if (filteredMods.length === 0) {
     return (
       <div className="flex-1 overflow-auto p-6">
-        <EmptyState onInstall={onInstall} hasSearch={isSearching} />
+        <EmptyState onInstall={onInstall} hasSearch={isSearching} hasFilters={hasActiveFilters} />
       </div>
     );
   }
 
-  const Card = isSearching ? ModCard : SortableModCard;
+  const Card = dndDisabled ? ModCard : SortableModCard;
 
   return (
     <>
@@ -78,12 +79,12 @@ export function LibraryContent({
           mods={filteredMods}
           viewMode={viewMode}
           onReorder={actions.handleReorder}
-          disabled={isSearching || isPatcherActive}
+          disabled={dndDisabled}
           onToggle={actions.handleToggleMod}
           onUninstall={actions.handleUninstallMod}
           onViewDetails={setDetailsMod}
         >
-          <div className={gridClass(viewMode, !isSearching)}>
+          <div className={gridClass(viewMode, !dndDisabled)}>
             {filteredMods.map((mod) => (
               <Card
                 key={mod.id}
@@ -128,13 +129,27 @@ function ErrorState({ error }: { error: AppError }) {
   );
 }
 
-function EmptyState({ onInstall, hasSearch }: { onInstall: () => void; hasSearch: boolean }) {
-  if (hasSearch) {
+function EmptyState({
+  onInstall,
+  hasSearch,
+  hasFilters,
+}: {
+  onInstall: () => void;
+  hasSearch: boolean;
+  hasFilters: boolean;
+}) {
+  if (hasSearch || hasFilters) {
     return (
       <div className="flex h-64 flex-col items-center justify-center text-center">
-        <LuSearch className="mb-4 h-12 w-12 text-surface-600" />
+        {hasFilters ? (
+          <LuFilter className="mb-4 h-12 w-12 text-surface-600" />
+        ) : (
+          <LuSearch className="mb-4 h-12 w-12 text-surface-600" />
+        )}
         <h3 className="mb-1 text-lg font-medium text-surface-300">No mods found</h3>
-        <p className="text-surface-500">Try adjusting your search query</p>
+        <p className="text-surface-500">
+          {hasFilters ? "Try adjusting your filters" : "Try adjusting your search query"}
+        </p>
       </div>
     );
   }
