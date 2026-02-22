@@ -1,3 +1,22 @@
+export const WELL_KNOWN_TAGS = [
+  "league-of-legends",
+  "tft",
+  "champion-skin",
+  "map-skin",
+  "ward-skin",
+  "ui",
+  "hud",
+  "font",
+  "sfx",
+  "announcer",
+  "structure",
+  "minion",
+  "jungle-monster",
+  "misc",
+];
+
+export const WELL_KNOWN_MAPS = ["summoners-rift", "aram", "teamfight-tactics", "arena", "swarm"];
+
 const TAG_LABELS: Record<string, string> = {
   "league-of-legends": "League of Legends",
   tft: "TFT",

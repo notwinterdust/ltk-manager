@@ -54,9 +54,9 @@ export const useLibraryFilterStore = create<LibraryFilterStore>((set) => ({
       return { selectedMaps: next };
     }),
 
-  setTags: (tags) => set({ selectedTags: tags }),
-  setChampions: (champions) => set({ selectedChampions: champions }),
-  setMaps: (maps) => set({ selectedMaps: maps }),
+  setTags: (tags) => set({ selectedTags: new Set(tags) }),
+  setChampions: (champions) => set({ selectedChampions: new Set(champions) }),
+  setMaps: (maps) => set({ selectedMaps: new Set(maps) }),
 
   clearFilters: () =>
     set({
@@ -69,6 +69,7 @@ export const useLibraryFilterStore = create<LibraryFilterStore>((set) => ({
 }));
 
 export function useHasActiveFilters() {
-  const { selectedTags, selectedChampions, selectedMaps } = useLibraryFilterStore();
-  return selectedTags.size > 0 || selectedChampions.size > 0 || selectedMaps.size > 0;
+  return useLibraryFilterStore(
+    (s) => s.selectedTags.size > 0 || s.selectedChampions.size > 0 || s.selectedMaps.size > 0,
+  );
 }

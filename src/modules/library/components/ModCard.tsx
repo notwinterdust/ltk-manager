@@ -262,9 +262,9 @@ function ModPills({ mod, max, className }: { mod: InstalledMod; max: number; cla
 
   return (
     <div className={`flex flex-wrap items-center gap-1 ${className ?? ""}`}>
-      {visible.map((pill, i) => (
+      {visible.map((pill) => (
         <span
-          key={i}
+          key={`${pill.color}:${pill.label}`}
           className={`rounded px-1.5 py-0.5 text-[10px] leading-tight ${colorClasses[pill.color]}`}
         >
           {pill.label}

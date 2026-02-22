@@ -47,7 +47,6 @@ SelectTrigger.displayName = "Select.Trigger";
 // Value
 export interface SelectValueProps extends Omit<BaseSelect.Value.Props, "className" | "children"> {
   className?: string;
-  placeholder?: string;
   prefix?: string;
   children?: BaseSelect.Value.Props["children"];
 }

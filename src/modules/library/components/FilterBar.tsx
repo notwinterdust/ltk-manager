@@ -3,27 +3,13 @@ import { LuX } from "react-icons/lu";
 
 import { MultiSelect, type MultiSelectOption } from "@/components";
 import type { FilterOptions } from "@/modules/library/api";
-import { getMapLabel, getTagLabel } from "@/modules/library/utils/labels";
+import {
+  getMapLabel,
+  getTagLabel,
+  WELL_KNOWN_MAPS,
+  WELL_KNOWN_TAGS,
+} from "@/modules/library/utils/labels";
 import { useHasActiveFilters, useLibraryFilterStore } from "@/stores";
-
-const WELL_KNOWN_TAGS = [
-  "league-of-legends",
-  "tft",
-  "champion-skin",
-  "map-skin",
-  "ward-skin",
-  "ui",
-  "hud",
-  "font",
-  "sfx",
-  "announcer",
-  "structure",
-  "minion",
-  "jungle-monster",
-  "misc",
-];
-
-const WELL_KNOWN_MAPS = ["summoners-rift", "aram", "teamfight-tactics", "arena", "swarm"];
 
 function mergeOptions(
   wellKnown: string[],

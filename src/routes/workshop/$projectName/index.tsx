@@ -6,7 +6,7 @@ import { LuCheck, LuImage, LuPencil, LuPlus, LuTrash2, LuX } from "react-icons/l
 import { Button, IconButton, MultiSelect, type MultiSelectOption, useToast } from "@/components";
 import { useAppForm } from "@/lib/form";
 import type { WorkshopAuthor } from "@/lib/tauri";
-import { getMapLabel, getTagLabel } from "@/modules/library";
+import { getMapLabel, getTagLabel, WELL_KNOWN_MAPS, WELL_KNOWN_TAGS } from "@/modules/library";
 import {
   useProjectContext,
   useProjectThumbnail,
@@ -14,25 +14,6 @@ import {
   useSaveProjectConfig,
   useSetProjectThumbnail,
 } from "@/modules/workshop";
-
-const TAG_VALUES = [
-  "league-of-legends",
-  "tft",
-  "champion-skin",
-  "map-skin",
-  "ward-skin",
-  "ui",
-  "hud",
-  "font",
-  "sfx",
-  "announcer",
-  "structure",
-  "minion",
-  "jungle-monster",
-  "misc",
-];
-
-const MAP_VALUES = ["summoners-rift", "aram", "teamfight-tactics", "arena", "swarm"];
 
 export const Route = createFileRoute("/workshop/$projectName/")({
   component: ProjectOverview,
@@ -59,11 +40,11 @@ function ProjectOverview() {
   const [championsText, setChampionsText] = useState(() => project.champions.join(", "));
 
   const tagOptions = useMemo<MultiSelectOption[]>(
-    () => TAG_VALUES.map((v) => ({ value: v, label: getTagLabel(v) })),
+    () => WELL_KNOWN_TAGS.map((v) => ({ value: v, label: getTagLabel(v) })),
     [],
   );
   const mapOptions = useMemo<MultiSelectOption[]>(
-    () => MAP_VALUES.map((v) => ({ value: v, label: getMapLabel(v) })),
+    () => WELL_KNOWN_MAPS.map((v) => ({ value: v, label: getMapLabel(v) })),
     [],
   );
 
