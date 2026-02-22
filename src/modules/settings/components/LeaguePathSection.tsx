@@ -2,7 +2,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
 import { LuCircleAlert, LuCircleCheck, LuFolderOpen, LuLoader } from "react-icons/lu";
 
-import { Button, Field, IconButton } from "@/components";
+import { Button, Field, IconButton, SectionCard } from "@/components";
 import { api, type Settings } from "@/lib/tauri";
 import { unwrapForQuery } from "@/utils/query";
 
@@ -63,8 +63,7 @@ export function LeaguePathSection({ settings, onSave }: SettingsSectionProps) {
   }
 
   return (
-    <section>
-      <h3 className="mb-4 text-lg font-medium text-surface-100">League of Legends</h3>
+    <SectionCard title="League of Legends">
       <div className="space-y-3">
         <span className="block text-sm font-medium text-surface-400">Installation Path</span>
         <div className="flex gap-2">
@@ -106,6 +105,6 @@ export function LeaguePathSection({ settings, onSave }: SettingsSectionProps) {
           </p>
         )}
       </div>
-    </section>
+    </SectionCard>
   );
 }

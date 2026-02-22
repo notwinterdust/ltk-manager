@@ -17,7 +17,7 @@ export function GeneralSection({ settings, onSave }: GeneralSectionProps) {
   const [migrationOpen, setMigrationOpen] = useState(false);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
       <LeaguePathSection settings={settings} onSave={onSave} />
       <PatchingSection settings={settings} onSave={onSave} />
       <ModStorageSection settings={settings} onSave={onSave} />

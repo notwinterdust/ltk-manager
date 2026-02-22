@@ -1,7 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { LuFolderOpen } from "react-icons/lu";
 
-import { Field, IconButton } from "@/components";
+import { Field, IconButton, SectionCard } from "@/components";
 import type { Settings } from "@/lib/tauri";
 
 interface ModStorageSectionProps {
@@ -26,8 +26,7 @@ export function ModStorageSection({ settings, onSave }: ModStorageSectionProps) 
   }
 
   return (
-    <section>
-      <h3 className="mb-4 text-lg font-medium text-surface-100">Mod Storage</h3>
+    <SectionCard title="Mod Storage">
       <div className="space-y-3">
         <span className="block text-sm font-medium text-surface-400">Storage Location</span>
         <div className="flex gap-2">
@@ -49,6 +48,6 @@ export function ModStorageSection({ settings, onSave }: ModStorageSectionProps) 
           Choose where your installed mods will be stored. Leave empty to use the default location.
         </p>
       </div>
-    </section>
+    </SectionCard>
   );
 }

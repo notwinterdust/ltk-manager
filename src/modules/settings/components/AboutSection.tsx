@@ -1,6 +1,6 @@
 import { LuFileText } from "react-icons/lu";
 
-import { Button } from "@/components";
+import { Button, SectionCard } from "@/components";
 import { api, type AppInfo } from "@/lib/tauri";
 
 interface AboutSectionProps {
@@ -9,9 +9,8 @@ interface AboutSectionProps {
 
 export function AboutSection({ appInfo }: AboutSectionProps) {
   return (
-    <section>
-      <h3 className="mb-4 text-lg font-medium text-surface-100">About</h3>
-      <div className="rounded-lg border border-surface-600 bg-surface-800 p-4">
+    <SectionCard title="About">
+      <div>
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-medium text-surface-100">LTK Manager</h4>
@@ -51,6 +50,6 @@ export function AboutSection({ appInfo }: AboutSectionProps) {
           </a>
         </div>
       </div>
-    </section>
+    </SectionCard>
   );
 }

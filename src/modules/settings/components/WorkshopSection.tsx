@@ -1,7 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { LuFolderOpen } from "react-icons/lu";
 
-import { Field, IconButton } from "@/components";
+import { Field, IconButton, SectionCard } from "@/components";
 import type { Settings } from "@/lib/tauri";
 
 interface WorkshopSectionProps {
@@ -26,8 +26,7 @@ export function WorkshopSection({ settings, onSave }: WorkshopSectionProps) {
   }
 
   return (
-    <section>
-      <h3 className="mb-4 text-lg font-medium text-surface-100">Workshop</h3>
+    <SectionCard title="Workshop">
       <div className="space-y-3">
         <span className="block text-sm font-medium text-surface-400">Workshop Directory</span>
         <div className="flex gap-2">
@@ -50,6 +49,6 @@ export function WorkshopSection({ settings, onSave }: WorkshopSectionProps) {
           will contain all your project folders.
         </p>
       </div>
-    </section>
+    </SectionCard>
   );
 }

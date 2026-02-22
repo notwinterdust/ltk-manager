@@ -1,3 +1,4 @@
+import { SectionCard } from "@/components";
 import type { Settings } from "@/lib/tauri";
 
 import { AccentColorPicker } from "./AccentColorPicker";
@@ -11,11 +12,10 @@ interface AppearanceSectionProps {
 
 export function AppearanceSection({ settings, onSave }: AppearanceSectionProps) {
   return (
-    <section>
-      <h3 className="mb-4 text-lg font-medium text-surface-100">Appearance</h3>
+    <SectionCard title="Appearance">
       <ThemePicker settings={settings} onSave={onSave} />
       <AccentColorPicker settings={settings} onSave={onSave} />
       <BackdropImagePicker settings={settings} onSave={onSave} />
-    </section>
+    </SectionCard>
   );
 }

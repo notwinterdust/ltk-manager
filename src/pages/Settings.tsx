@@ -63,7 +63,7 @@ export function Settings() {
         <div className="min-h-0 flex-1 overflow-auto">
           <Tabs.Panel value="general" className="mx-auto max-w-2xl space-y-8 p-6">
             {firstRun && !settings.leaguePath && (
-              <div className="flex items-start gap-3 rounded-lg border border-brand-500/30 bg-brand-500/10 p-4">
+              <div className="flex items-start gap-3 rounded-xl border border-brand-500/30 bg-brand-500/10 p-5">
                 <LuInfo className="mt-0.5 h-5 w-5 shrink-0 text-brand-400" />
                 <div>
                   <h3 className="font-medium text-brand-300">Welcome to LTK Manager!</h3>

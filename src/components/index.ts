@@ -10,6 +10,7 @@ export * from "./NavTabs";
 export * from "./Popover";
 export * from "./Progress";
 export * from "./RadioGroup";
+export * from "./SectionCard";
 export * from "./Select";
 export * from "./Switch";
 export * from "./Tabs";

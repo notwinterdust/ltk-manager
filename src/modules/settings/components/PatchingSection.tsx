@@ -1,4 +1,4 @@
-import { Switch } from "@/components";
+import { SectionCard, Switch } from "@/components";
 import type { Settings } from "@/lib/tauri";
 
 interface PatchingSectionProps {
@@ -8,8 +8,7 @@ interface PatchingSectionProps {
 
 export function PatchingSection({ settings, onSave }: PatchingSectionProps) {
   return (
-    <section>
-      <h3 className="mb-4 text-lg font-medium text-surface-100">Patching</h3>
+    <SectionCard title="Patching">
       <div className="space-y-3">
         <label className="flex items-center justify-between gap-4">
           <div>
@@ -25,6 +24,6 @@ export function PatchingSection({ settings, onSave }: PatchingSectionProps) {
           />
         </label>
       </div>
-    </section>
+    </SectionCard>
   );
 }
