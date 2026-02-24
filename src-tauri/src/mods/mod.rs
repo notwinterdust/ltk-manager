@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use tauri::AppHandle;
+use ts_rs::TS;
 use uuid::Uuid;
 
 /// Managed struct that encapsulates mod library operations.
@@ -94,7 +95,8 @@ impl ModLibrary {
 }
 
 /// Slugified profile name used as the filesystem directory name.
-#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(transparent)]
 pub struct ProfileSlug(pub String);
 
@@ -135,7 +137,8 @@ impl From<String> for ProfileSlug {
 }
 
 /// A mod profile for organizing different mod configurations.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Profile {
     /// Unique identifier (UUID)
@@ -156,7 +159,8 @@ pub struct Profile {
 }
 
 /// A mod layer shown in the UI.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ModLayer {
     pub name: String,
@@ -165,7 +169,8 @@ pub struct ModLayer {
 }
 
 /// A mod entry shown in the UI Library.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct InstalledMod {
     pub id: String,
@@ -185,7 +190,8 @@ pub struct InstalledMod {
 }
 
 /// Result of a bulk mod install operation.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BulkInstallResult {
     pub installed: Vec<InstalledMod>,
@@ -193,7 +199,8 @@ pub struct BulkInstallResult {
 }
 
 /// Error info for a single file that failed during bulk install.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct BulkInstallError {
     pub file_path: String,
@@ -202,7 +209,8 @@ pub struct BulkInstallError {
 }
 
 /// Progress event emitted per-file during bulk mod install.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct InstallProgress {
     pub current: usize,
@@ -211,7 +219,8 @@ pub struct InstallProgress {
 }
 
 /// Progress event emitted during cslol migration (both packaging and installing phases).
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MigrationProgress {
     pub phase: MigrationPhase,
@@ -220,7 +229,8 @@ pub struct MigrationProgress {
     pub current_file: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum MigrationPhase {
     Packaging,

@@ -3,6 +3,6 @@ export const workshopKeys = {
   projects: () => [...workshopKeys.all, "projects"] as const,
   project: (path: string) => [...workshopKeys.projects(), path] as const,
   validation: (path: string) => [...workshopKeys.project(path), "validation"] as const,
-  thumbnail: (path: string, thumbnailPath?: string) =>
+  thumbnail: (path: string, thumbnailPath?: string | null) =>
     [...workshopKeys.project(path), "thumbnail", thumbnailPath] as const,
 };

@@ -13,23 +13,29 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use std::thread;
 use tauri::{AppHandle, Emitter, Manager, State};
+use ts_rs::TS;
 
 /// Configuration for starting the patcher.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PatcherConfig {
     /// Optional log file path.
+    #[ts(optional)]
     pub log_file: Option<String>,
     /// Timeout in milliseconds for hook initialization. Defaults to 5 minutes.
+    #[ts(optional)]
     pub timeout_ms: Option<u32>,
     /// Optional legacy patcher flags (matches `cslol_set_flags`).
     ///
     /// If not provided, defaults to 0 (equivalent to `--opts:none` in cslol-tools).
+    #[ts(optional, type = "number")]
     pub flags: Option<u64>,
 }
 
 /// Current status of the patcher.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PatcherStatus {
     /// Whether the patcher is currently running.

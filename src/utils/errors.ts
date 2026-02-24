@@ -1,34 +1,8 @@
 import { z } from "zod";
 
-/**
- * Error codes that match the Rust ErrorCode enum.
- * Used for pattern matching on error types in the frontend.
- */
-export type ErrorCode =
-  | "IO"
-  | "SERIALIZATION"
-  | "MODPKG"
-  | "LEAGUE_NOT_FOUND"
-  | "INVALID_PATH"
-  | "MOD_NOT_FOUND"
-  | "VALIDATION_FAILED"
-  | "INTERNAL_STATE"
-  | "FANTOME"
-  | "PATCHER_RUNNING"
-  | "UNKNOWN";
+import type { AppError, ErrorCode } from "@/lib/bindings";
 
-/**
- * Structured error response from the backend.
- * Provides rich error information for proper error handling.
- */
-export interface AppError {
-  /** Machine-readable error code for pattern matching */
-  code: ErrorCode;
-  /** Human-readable error message */
-  message: string;
-  /** Optional contextual data (e.g., the invalid path, missing mod ID) */
-  context?: unknown;
-}
+export type { AppError, ErrorCode } from "@/lib/bindings";
 
 /**
  * Type guard to check if an error has a specific code.

@@ -1,247 +1,32 @@
 import { invoke } from "@tauri-apps/api/core";
 
-import type { AppError } from "@/utils/errors";
+import type {
+  AppError,
+  AppInfo,
+  BulkInstallResult,
+  CreateProjectArgs,
+  CslolModInfo,
+  FantomePeekResult,
+  ImportFantomeArgs,
+  ImportGitRepoArgs,
+  InstalledMod,
+  ModpkgInfo,
+  PackProjectArgs,
+  PackResult,
+  PatcherConfig,
+  PatcherStatus,
+  Profile,
+  SaveProjectConfigArgs,
+  Settings,
+  ValidationResult,
+  WorkshopProject,
+} from "@/lib/bindings";
 import type { Result } from "@/utils/result";
 
-// Re-export Result utilities for convenience
-export type { AppError, ErrorCode } from "@/utils/errors";
+export type * from "@/lib/bindings";
 export type { Result } from "@/utils/result";
 export { isErr, isOk, match, unwrap, unwrapOr } from "@/utils/result";
 
-// Types matching Rust structs
-export interface AppInfo {
-  name: string;
-  version: string;
-  logFilePath: string | null;
-}
-
-export interface AccentColor {
-  preset: string | null; // "blue", "purple", "green", "orange", "pink", "red", "teal"
-  customHue: number | null; // 0-360 for custom color
-}
-
-export interface Settings {
-  leaguePath: string | null;
-  modStoragePath: string | null;
-  /** Directory where mod projects are stored (for Creator Workshop) */
-  workshopPath: string | null;
-  theme: "light" | "dark" | "system";
-  accentColor: AccentColor;
-  firstRunComplete: boolean;
-  backdropImage: string | null;
-  backdropBlur: number | null;
-  libraryViewMode: string | null;
-  /** Whether to patch TFT game files (Map22.wad.client). Default: false. */
-  patchTft: boolean;
-  /** Whether the user has dismissed the cslol-manager migration banner. */
-  migrationDismissed: boolean;
-}
-
-export interface InstalledMod {
-  id: string;
-  name: string;
-  displayName: string;
-  version: string;
-  description?: string;
-  authors: string[];
-  enabled: boolean;
-  installedAt: string;
-  layers: ModLayer[];
-  tags: string[];
-  champions: string[];
-  maps: string[];
-  modDir: string;
-}
-
-export interface ModLayer {
-  name: string;
-  priority: number;
-  enabled: boolean;
-}
-
-export interface ModpkgInfo {
-  name: string;
-  displayName: string;
-  version: string;
-  description?: string;
-  authors: string[];
-  layers: LayerInfo[];
-  fileCount: number;
-  totalSize: number;
-}
-
-export interface LayerInfo {
-  name: string;
-  priority: number;
-  description?: string;
-  fileCount: number;
-}
-
-export interface BulkInstallResult {
-  installed: InstalledMod[];
-  failed: BulkInstallError[];
-}
-
-export interface BulkInstallError {
-  filePath: string;
-  fileName: string;
-  message: string;
-}
-
-export interface InstallProgress {
-  current: number;
-  total: number;
-  currentFile: string;
-}
-
-export interface CslolModInfo {
-  folderName: string;
-  name: string;
-  author: string;
-  version: string;
-  description: string;
-}
-
-export type MigrationPhase = "packaging" | "installing";
-
-export interface MigrationProgress {
-  phase: MigrationPhase;
-  current: number;
-  total: number;
-  currentFile: string;
-}
-
-export interface PatcherConfig {
-  logFile?: string | null;
-  timeoutMs?: number | null;
-  flags?: number | null;
-}
-
-export type PatcherPhase = "idle" | "building" | "patching";
-
-export interface PatcherStatus {
-  running: boolean;
-  configPath: string | null;
-  phase: PatcherPhase;
-}
-
-export interface OverlayProgress {
-  stage: "indexing" | "collecting" | "patching" | "strings" | "complete";
-  currentFile: string | null;
-  current: number;
-  total: number;
-}
-
-// Profile types
-export interface Profile {
-  id: string;
-  name: string;
-  slug: string;
-  enabledMods: string[];
-  createdAt: string;
-  lastUsed: string;
-}
-
-// Workshop types
-export interface WorkshopProject {
-  path: string;
-  name: string;
-  displayName: string;
-  version: string;
-  description: string;
-  authors: WorkshopAuthor[];
-  tags: string[];
-  champions: string[];
-  maps: string[];
-  layers: WorkshopLayer[];
-  thumbnailPath?: string;
-  lastModified: string;
-}
-
-export interface WorkshopAuthor {
-  name: string;
-  role?: string;
-}
-
-export interface WorkshopLayer {
-  name: string;
-  priority: number;
-  description?: string;
-  stringOverrides: Record<string, Record<string, string>>;
-}
-
-export interface CreateProjectArgs {
-  name: string;
-  displayName: string;
-  description: string;
-  authors: string[];
-}
-
-export interface SaveProjectConfigArgs {
-  projectPath: string;
-  displayName: string;
-  version: string;
-  description: string;
-  authors: WorkshopAuthor[];
-  tags: string[];
-  champions: string[];
-  maps: string[];
-}
-
-export interface PackProjectArgs {
-  projectPath: string;
-  outputDir?: string;
-  format: "modpkg" | "fantome";
-}
-
-export interface PackResult {
-  outputPath: string;
-  fileName: string;
-  format: string;
-}
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-  warnings: string[];
-}
-
-export interface FantomePeekResult {
-  name: string;
-  author: string;
-  version: string;
-  description: string;
-  wadFiles: string[];
-  suggestedName: string;
-}
-
-export interface ImportFantomeArgs {
-  filePath: string;
-  name: string;
-  displayName: string;
-}
-
-export interface FantomeImportProgress {
-  stage: "extracting" | "finalizing" | "complete" | "error";
-  currentWad: string | null;
-  current: number;
-  total: number;
-}
-
-export interface ImportGitRepoArgs {
-  url: string;
-  branch?: string;
-}
-
-export interface GitImportProgress {
-  stage: "downloading" | "extracting" | "complete" | "error";
-  message: string | null;
-}
-
-/**
- * Raw IPC result from Tauri commands.
- * This matches the Rust IpcResult<T> serialization format.
- */
 type IpcResponse<T> = { ok: true; value: T } | { ok: false; error: AppError };
 
 /**

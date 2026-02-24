@@ -3,6 +3,7 @@ use std::fs;
 use std::path::PathBuf;
 use std::sync::Mutex;
 use tauri::{AppHandle, Manager};
+use ts_rs::TS;
 
 /// Get the application data directory for storing settings using Tauri's path resolver.
 pub fn get_app_data_dir(app_handle: &AppHandle) -> Option<PathBuf> {
@@ -85,7 +86,8 @@ impl Default for SettingsState {
 }
 
 /// Theme selection for the application.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, TS)]
+#[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum Theme {
     #[default]
@@ -95,7 +97,8 @@ pub enum Theme {
 }
 
 /// Accent color configuration.
-#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, PartialEq, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct AccentColor {
     /// Preset color name: "blue", "purple", "green", "orange", "pink", "red", "teal"
@@ -104,12 +107,16 @@ pub struct AccentColor {
     pub custom_hue: Option<f32>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
+    #[ts(as = "Option<String>")]
     pub league_path: Option<PathBuf>,
+    #[ts(as = "Option<String>")]
     pub mod_storage_path: Option<PathBuf>,
     /// Directory where mod projects are stored (for Creator Workshop).
+    #[ts(as = "Option<String>")]
     pub workshop_path: Option<PathBuf>,
     pub first_run_complete: bool,
     /// Application theme (system, dark, or light).
@@ -117,6 +124,7 @@ pub struct Settings {
     /// Accent color configuration.
     pub accent_color: AccentColor,
     /// Optional backdrop image path for glassmorphism effect.
+    #[ts(as = "Option<String>")]
     pub backdrop_image: Option<PathBuf>,
     /// Backdrop blur amount in pixels (default: 40).
     pub backdrop_blur: Option<u32>,

@@ -11,7 +11,10 @@ import { workshopKeys } from "./keys";
  * The queryFn returns the final asset URL (not a raw path) so that
  * setQueryData can inject cache-busted URLs directly.
  */
-export function projectThumbnailOptions(projectPath: string, thumbnailPath: string | undefined) {
+export function projectThumbnailOptions(
+  projectPath: string,
+  thumbnailPath: string | null | undefined,
+) {
   return queryOptions<string, AppError>({
     queryKey: workshopKeys.thumbnail(projectPath, thumbnailPath),
     queryFn: thumbnailPath
@@ -28,6 +31,6 @@ export function projectThumbnailOptions(projectPath: string, thumbnailPath: stri
 /**
  * Hook to fetch and cache a project thumbnail as a Tauri asset URL.
  */
-export function useProjectThumbnail(projectPath: string, thumbnailPath?: string) {
+export function useProjectThumbnail(projectPath: string, thumbnailPath?: string | null) {
   return useQuery(projectThumbnailOptions(projectPath, thumbnailPath));
 }

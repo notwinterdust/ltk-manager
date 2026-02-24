@@ -1,9 +1,11 @@
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
+use ts_rs::TS;
 
 /// Error codes that can be communicated across the IPC boundary.
 /// These are serialized as SCREAMING_SNAKE_CASE for TypeScript consumption.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum ErrorCode {
     /// File system I/O error
@@ -46,7 +48,8 @@ pub enum ErrorCode {
 
 /// Structured error response sent over IPC.
 /// This provides rich error information to the frontend.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, rename = "AppError")]
 #[serde(rename_all = "camelCase")]
 pub struct AppErrorResponse {
     /// Machine-readable error code for pattern matching
@@ -55,6 +58,7 @@ pub struct AppErrorResponse {
     pub message: String,
     /// Optional contextual data (e.g., the invalid path, missing mod ID)
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional, type = "unknown")]
     pub context: Option<serde_json::Value>,
 }
 

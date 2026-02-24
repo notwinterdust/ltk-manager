@@ -38,7 +38,7 @@ export function Library() {
 
   function handleStartPatcher() {
     startPatcher.mutate(
-      { timeoutMs: null, logFile: null },
+      {},
       {
         onError: (error) => {
           console.error("Failed to start patcher:", error.message);

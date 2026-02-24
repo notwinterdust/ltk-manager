@@ -9,7 +9,8 @@ use std::path::PathBuf;
 use tauri::Emitter;
 
 /// Progress event emitted during overlay building.
-#[derive(Clone, serde::Serialize)]
+#[derive(Clone, serde::Serialize, ts_rs::TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct OverlayProgress {
     pub stage: String,

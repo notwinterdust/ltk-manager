@@ -5,11 +5,13 @@ use std::fs;
 use std::io::{Read, Write};
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
+use ts_rs::TS;
 
 use super::{BulkInstallResult, MigrationPhase, MigrationProgress, ModLibrary};
 
 /// Metadata for a discovered cslol-manager mod, shown in the UI selection step.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct CslolModInfo {
     pub folder_name: String,

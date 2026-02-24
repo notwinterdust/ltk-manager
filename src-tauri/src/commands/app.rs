@@ -1,7 +1,9 @@
 use crate::error::IpcResult;
 use serde::Serialize;
+use ts_rs::TS;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct AppInfo {
     pub name: String,
