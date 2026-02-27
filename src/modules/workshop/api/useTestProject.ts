@@ -26,5 +26,8 @@ export function useTestProjects() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: patcherKeys.status() });
     },
+    onError: () => {
+      setTestingProjects([]);
+    },
   });
 }

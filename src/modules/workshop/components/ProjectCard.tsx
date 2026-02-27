@@ -77,7 +77,7 @@ export function ProjectCard({ project, viewMode, onEdit }: ProjectCardProps) {
       >
         <Checkbox
           size="md"
-          checked={(isPatcherActive ? isTesting : selected) ?? false}
+          checked={isPatcherActive ? isTesting : selected}
           onCheckedChange={() => toggle(project.path)}
           disabled={isPatcherActive}
         />
@@ -208,7 +208,7 @@ export function ProjectCard({ project, viewMode, onEdit }: ProjectCardProps) {
       >
         <Checkbox
           size="md"
-          checked={(isPatcherActive ? isTesting : selected) ?? false}
+          checked={isPatcherActive ? isTesting : selected}
           onCheckedChange={() => toggle(project.path)}
           disabled={isPatcherActive}
         />

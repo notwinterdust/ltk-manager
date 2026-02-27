@@ -51,19 +51,26 @@ export function SelectionActionBar() {
             selectAll(filteredProjects.map((p) => p.path));
           }
         }}
+        aria-label="Toggle select all projects"
       />
       <span className="text-sm text-surface-300">
         {selectedCount} of {totalCount} selected
       </span>
 
-      <IconButton icon={<LuX className="h-4 w-4" />} variant="ghost" size="md" onClick={clear} />
+      <IconButton
+        icon={<LuX className="h-4 w-4" />}
+        variant="ghost"
+        size="md"
+        onClick={clear}
+        aria-label="Clear selection"
+      />
 
       <div className="flex-1" />
 
       <Button
         variant="filled"
         size="md"
-        left={<LuPlay className="h-6 w-6" />}
+        left={<LuPlay className="h-4 w-4" />}
         onClick={handleTest}
         loading={testProjects.isPending}
       >

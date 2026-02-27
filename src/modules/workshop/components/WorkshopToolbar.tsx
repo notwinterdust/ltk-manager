@@ -105,6 +105,7 @@ export function WorkshopToolbar() {
           variant="ghost"
           size="sm"
           onClick={() => selectAll(filteredProjects.map((p) => p.path))}
+          aria-label="Select all projects"
         />
       )}
 
