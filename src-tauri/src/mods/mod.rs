@@ -517,28 +517,7 @@ mod tests {
         assert!(cache_dir.ends_with("profiles/my-profile/cache"));
     }
 
-    // ── Profile validation logic ──
-
-    #[test]
-    fn create_profile_empty_name_rejected() {
-        let name = "".to_string();
-        let trimmed = name.trim().to_string();
-        assert!(trimmed.is_empty());
-    }
-
-    #[test]
-    fn create_profile_whitespace_name_rejected() {
-        let name = "   ".to_string();
-        let trimmed = name.trim().to_string();
-        assert!(trimmed.is_empty());
-    }
-
-    #[test]
-    fn create_profile_duplicate_name_rejected() {
-        let index = LibraryIndex::default();
-        let duplicate_name = "Default";
-        assert!(index.profiles.iter().any(|p| p.name == duplicate_name));
-    }
+    // ── Profile slug and lookup ──
 
     #[test]
     fn create_profile_slug_generation() {
@@ -552,43 +531,21 @@ mod tests {
     }
 
     #[test]
-    fn delete_profile_cannot_delete_default() {
-        let index = LibraryIndex::default();
-        let default_profile = &index.profiles[0];
-        assert_eq!(default_profile.name, "Default");
-    }
-
-    #[test]
-    fn delete_profile_cannot_delete_active() {
-        let index = LibraryIndex::default();
-        assert_eq!(index.profiles[0].id, index.active_profile_id);
-    }
-
-    #[test]
-    fn rename_profile_cannot_rename_default() {
-        let index = LibraryIndex::default();
-        let profile = &index.profiles[0];
-        assert_eq!(profile.name, "Default");
-    }
-
-    #[test]
-    fn rename_profile_duplicate_name_detected() {
+    fn profile_slug_uniqueness_check() {
         let mut index = LibraryIndex::default();
-        let profile_to_rename_id = "p2".to_string();
         index.profiles.push(Profile {
-            id: profile_to_rename_id.clone(),
-            name: "Profile A".to_string(),
-            slug: ProfileSlug::from_name("Profile A").unwrap(),
+            id: "p2".to_string(),
+            name: "My Profile".to_string(),
+            slug: ProfileSlug::from_name("My Profile").unwrap(),
             enabled_mods: Vec::new(),
             mod_order: Vec::new(),
             created_at: Utc::now(),
             last_used: Utc::now(),
         });
-        let new_name = "Default";
-        assert!(index
-            .profiles
-            .iter()
-            .any(|p| p.id != profile_to_rename_id && p.name == new_name));
+
+        let slug = ProfileSlug::from_name("My Profile").unwrap();
+        assert!(!slug.is_unique_in(&index, None));
+        assert!(slug.is_unique_in(&index, Some("p2")));
     }
 
     #[test]

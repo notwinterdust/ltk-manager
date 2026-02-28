@@ -26,7 +26,7 @@ export function createMockInstalledMod(overrides?: Partial<InstalledMod>): Insta
     description: "A test mod",
     authors: ["Test Author"],
     enabled: true,
-    installedAt: new Date().toISOString(),
+    installedAt: "2025-01-01T00:00:00.000Z",
     layers: [{ name: "base", priority: 0, enabled: true }],
     tags: [],
     champions: [],
@@ -43,8 +43,8 @@ export function createMockProfile(overrides?: Partial<Profile>): Profile {
     slug: "test-profile",
     enabledMods: [],
     modOrder: [],
-    createdAt: new Date().toISOString(),
-    lastUsed: new Date().toISOString(),
+    createdAt: "2025-01-01T00:00:00.000Z",
+    lastUsed: "2025-01-01T00:00:00.000Z",
     ...overrides,
   };
 }

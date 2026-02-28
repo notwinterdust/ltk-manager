@@ -6,7 +6,205 @@ use crate::error::{AppError, AppResult};
 use ltk_mod_project::ModProjectLayer;
 use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+
+/// Create a new layer in a project at the given path.
+pub(crate) fn create_layer_at_path(
+    path: &Path,
+    name: &str,
+    description: Option<String>,
+) -> AppResult<WorkshopProject> {
+    let name = name.trim().to_string();
+
+    if !is_valid_project_name(&name) {
+        return Err(AppError::ValidationFailed(
+            "Layer name must be lowercase alphanumeric with hyphens only".to_string(),
+        ));
+    }
+
+    let config_path = find_config_file(path)
+        .ok_or_else(|| AppError::ProjectNotFound(path.display().to_string()))?;
+    let mut mod_project = load_mod_project(&config_path)?;
+
+    if mod_project.layers.iter().any(|l| l.name == name) {
+        return Err(AppError::ValidationFailed(format!(
+            "A layer named '{}' already exists",
+            name
+        )));
+    }
+
+    let max_priority = mod_project
+        .layers
+        .iter()
+        .map(|l| l.priority)
+        .max()
+        .unwrap_or(-1);
+
+    mod_project.layers.push(ModProjectLayer {
+        name: name.clone(),
+        priority: max_priority + 1,
+        description,
+        string_overrides: HashMap::new(),
+    });
+
+    let json_config_path = path.join("mod.config.json");
+    let config_content = serde_json::to_string_pretty(&mod_project)?;
+    fs::write(&json_config_path, config_content)?;
+
+    let layer_content_dir = path.join("content").join(&name);
+    fs::create_dir_all(&layer_content_dir)?;
+
+    load_workshop_project(path)
+}
+
+/// Delete a layer from a project at the given path.
+pub(crate) fn delete_layer_at_path(path: &Path, layer_name: &str) -> AppResult<WorkshopProject> {
+    if layer_name == "base" {
+        return Err(AppError::ValidationFailed(
+            "Cannot delete the base layer".to_string(),
+        ));
+    }
+
+    let config_path = find_config_file(path)
+        .ok_or_else(|| AppError::ProjectNotFound(path.display().to_string()))?;
+    let mut mod_project = load_mod_project(&config_path)?;
+
+    let layer_index = mod_project
+        .layers
+        .iter()
+        .position(|l| l.name == layer_name)
+        .ok_or_else(|| {
+            AppError::ValidationFailed(format!("Layer '{}' not found in project", layer_name))
+        })?;
+
+    mod_project.layers.remove(layer_index);
+
+    let json_config_path = path.join("mod.config.json");
+    let config_content = serde_json::to_string_pretty(&mod_project)?;
+    fs::write(&json_config_path, config_content)?;
+
+    let layer_content_dir = path.join("content").join(layer_name);
+    if layer_content_dir.exists() {
+        let _ = fs::remove_dir_all(&layer_content_dir);
+    }
+
+    load_workshop_project(path)
+}
+
+/// Update a layer's description in a project at the given path.
+pub(crate) fn update_layer_description_at_path(
+    path: &Path,
+    layer_name: &str,
+    description: Option<String>,
+) -> AppResult<WorkshopProject> {
+    let config_path = find_config_file(path)
+        .ok_or_else(|| AppError::ProjectNotFound(path.display().to_string()))?;
+    let mut mod_project = load_mod_project(&config_path)?;
+
+    let layer = mod_project
+        .layers
+        .iter_mut()
+        .find(|l| l.name == layer_name)
+        .ok_or_else(|| {
+            AppError::ValidationFailed(format!("Layer '{}' not found in project", layer_name))
+        })?;
+
+    layer.description = description;
+
+    let json_config_path = path.join("mod.config.json");
+    let config_content = serde_json::to_string_pretty(&mod_project)?;
+    fs::write(&json_config_path, config_content)?;
+
+    load_workshop_project(path)
+}
+
+/// Reorder layers in a project at the given path by reassigning priorities.
+pub(crate) fn reorder_layers_at_path(
+    path: &Path,
+    layer_names: Vec<String>,
+) -> AppResult<WorkshopProject> {
+    let config_path = find_config_file(path)
+        .ok_or_else(|| AppError::ProjectNotFound(path.display().to_string()))?;
+    let mut mod_project = load_mod_project(&config_path)?;
+
+    if layer_names.contains(&"base".to_string()) {
+        return Err(AppError::ValidationFailed(
+            "Base layer cannot be reordered".to_string(),
+        ));
+    }
+
+    let mut current_non_base: Vec<String> = mod_project
+        .layers
+        .iter()
+        .filter(|l| l.name != "base")
+        .map(|l| l.name.clone())
+        .collect();
+    let mut provided_names = layer_names.clone();
+    current_non_base.sort();
+    provided_names.sort();
+
+    if current_non_base != provided_names {
+        return Err(AppError::ValidationFailed(
+            "Provided layer names must match exactly the existing non-base layers".to_string(),
+        ));
+    }
+
+    let mut reordered = Vec::with_capacity(mod_project.layers.len());
+    if let Some(mut base) = mod_project
+        .layers
+        .iter()
+        .find(|l| l.name == "base")
+        .cloned()
+    {
+        base.priority = 0;
+        reordered.push(base);
+    }
+    for (i, name) in layer_names.iter().enumerate() {
+        let mut layer = mod_project
+            .layers
+            .iter()
+            .find(|l| &l.name == name)
+            .cloned()
+            .expect("layer existence validated above");
+        layer.priority = (i + 1) as i32;
+        reordered.push(layer);
+    }
+    mod_project.layers = reordered;
+
+    let json_config_path = path.join("mod.config.json");
+    let config_content = serde_json::to_string_pretty(&mod_project)?;
+    fs::write(&json_config_path, config_content)?;
+
+    load_workshop_project(path)
+}
+
+/// Save string overrides for a specific layer in a project at the given path.
+pub(crate) fn save_layer_string_overrides_at_path(
+    path: &Path,
+    layer_name: &str,
+    string_overrides: HashMap<String, HashMap<String, String>>,
+) -> AppResult<WorkshopProject> {
+    let config_path = find_config_file(path)
+        .ok_or_else(|| AppError::ProjectNotFound(path.display().to_string()))?;
+
+    let mut mod_project = load_mod_project(&config_path)?;
+
+    let layer = mod_project
+        .layers
+        .iter_mut()
+        .find(|l| l.name == layer_name)
+        .ok_or_else(|| {
+            AppError::ValidationFailed(format!("Layer '{}' not found in project", layer_name))
+        })?;
+
+    layer.string_overrides = string_overrides;
+
+    let json_config_path = path.join("mod.config.json");
+    let config_content = serde_json::to_string_pretty(&mod_project)?;
+    fs::write(&json_config_path, config_content)?;
+
+    load_workshop_project(path)
+}
 
 impl Workshop {
     /// Save string overrides for a specific layer in a workshop project.
@@ -20,31 +218,7 @@ impl Workshop {
         if !path.exists() {
             return Err(AppError::ProjectNotFound(project_path.to_string()));
         }
-
-        let config_path = find_config_file(&path)
-            .ok_or_else(|| AppError::ProjectNotFound(project_path.to_string()))?;
-
-        // Load existing config
-        let mut mod_project = load_mod_project(&config_path)?;
-
-        // Find the target layer
-        let layer = mod_project
-            .layers
-            .iter_mut()
-            .find(|l| l.name == layer_name)
-            .ok_or_else(|| {
-                AppError::ValidationFailed(format!("Layer '{}' not found in project", layer_name))
-            })?;
-
-        // Update string overrides
-        layer.string_overrides = string_overrides;
-
-        // Save as JSON
-        let json_config_path = path.join("mod.config.json");
-        let config_content = serde_json::to_string_pretty(&mod_project)?;
-        fs::write(&json_config_path, config_content)?;
-
-        load_workshop_project(&path)
+        save_layer_string_overrides_at_path(&path, layer_name, string_overrides)
     }
 
     /// Create a new layer in a workshop project.
@@ -54,97 +228,20 @@ impl Workshop {
         name: &str,
         description: Option<String>,
     ) -> AppResult<WorkshopProject> {
-        let name = name.trim().to_string();
-
-        if !is_valid_project_name(&name) {
-            return Err(AppError::ValidationFailed(
-                "Layer name must be lowercase alphanumeric with hyphens only".to_string(),
-            ));
-        }
-
         let path = PathBuf::from(project_path);
         if !path.exists() {
             return Err(AppError::ProjectNotFound(project_path.to_string()));
         }
-
-        let config_path = find_config_file(&path)
-            .ok_or_else(|| AppError::ProjectNotFound(project_path.to_string()))?;
-        let mut mod_project = load_mod_project(&config_path)?;
-
-        // Check for duplicate layer name
-        if mod_project.layers.iter().any(|l| l.name == name) {
-            return Err(AppError::ValidationFailed(format!(
-                "A layer named '{}' already exists",
-                name
-            )));
-        }
-
-        // Assign priority = max existing priority + 1
-        let max_priority = mod_project
-            .layers
-            .iter()
-            .map(|l| l.priority)
-            .max()
-            .unwrap_or(-1);
-
-        mod_project.layers.push(ModProjectLayer {
-            name: name.clone(),
-            priority: max_priority + 1,
-            description,
-            string_overrides: HashMap::new(),
-        });
-
-        // Save config
-        let json_config_path = path.join("mod.config.json");
-        let config_content = serde_json::to_string_pretty(&mod_project)?;
-        fs::write(&json_config_path, config_content)?;
-
-        // Create content directory for the layer
-        let layer_content_dir = path.join("content").join(&name);
-        fs::create_dir_all(&layer_content_dir)?;
-
-        load_workshop_project(&path)
+        create_layer_at_path(&path, name, description)
     }
 
     /// Delete a layer from a workshop project.
     pub fn delete_layer(&self, project_path: &str, layer_name: &str) -> AppResult<WorkshopProject> {
-        if layer_name == "base" {
-            return Err(AppError::ValidationFailed(
-                "Cannot delete the base layer".to_string(),
-            ));
-        }
-
         let path = PathBuf::from(project_path);
         if !path.exists() {
             return Err(AppError::ProjectNotFound(project_path.to_string()));
         }
-
-        let config_path = find_config_file(&path)
-            .ok_or_else(|| AppError::ProjectNotFound(project_path.to_string()))?;
-        let mut mod_project = load_mod_project(&config_path)?;
-
-        let layer_index = mod_project
-            .layers
-            .iter()
-            .position(|l| l.name == layer_name)
-            .ok_or_else(|| {
-                AppError::ValidationFailed(format!("Layer '{}' not found in project", layer_name))
-            })?;
-
-        mod_project.layers.remove(layer_index);
-
-        // Save config
-        let json_config_path = path.join("mod.config.json");
-        let config_content = serde_json::to_string_pretty(&mod_project)?;
-        fs::write(&json_config_path, config_content)?;
-
-        // Remove content directory (best-effort)
-        let layer_content_dir = path.join("content").join(layer_name);
-        if layer_content_dir.exists() {
-            let _ = fs::remove_dir_all(&layer_content_dir);
-        }
-
-        load_workshop_project(&path)
+        delete_layer_at_path(&path, layer_name)
     }
 
     /// Update a layer's description in a workshop project.
@@ -158,26 +255,7 @@ impl Workshop {
         if !path.exists() {
             return Err(AppError::ProjectNotFound(project_path.to_string()));
         }
-
-        let config_path = find_config_file(&path)
-            .ok_or_else(|| AppError::ProjectNotFound(project_path.to_string()))?;
-        let mut mod_project = load_mod_project(&config_path)?;
-
-        let layer = mod_project
-            .layers
-            .iter_mut()
-            .find(|l| l.name == layer_name)
-            .ok_or_else(|| {
-                AppError::ValidationFailed(format!("Layer '{}' not found in project", layer_name))
-            })?;
-
-        layer.description = description;
-
-        let json_config_path = path.join("mod.config.json");
-        let config_content = serde_json::to_string_pretty(&mod_project)?;
-        fs::write(&json_config_path, config_content)?;
-
-        load_workshop_project(&path)
+        update_layer_description_at_path(&path, layer_name, description)
     }
 
     /// Reorder layers in a workshop project by reassigning priorities.
@@ -190,70 +268,14 @@ impl Workshop {
         if !path.exists() {
             return Err(AppError::ProjectNotFound(project_path.to_string()));
         }
-
-        let config_path = find_config_file(&path)
-            .ok_or_else(|| AppError::ProjectNotFound(project_path.to_string()))?;
-        let mut mod_project = load_mod_project(&config_path)?;
-
-        // layer_names should only contain non-base layers
-        if layer_names.contains(&"base".to_string()) {
-            return Err(AppError::ValidationFailed(
-                "Base layer cannot be reordered".to_string(),
-            ));
-        }
-
-        // Validate that layer_names contains exactly the non-base layers
-        let mut current_non_base: Vec<String> = mod_project
-            .layers
-            .iter()
-            .filter(|l| l.name != "base")
-            .map(|l| l.name.clone())
-            .collect();
-        let mut provided_names = layer_names.clone();
-        current_non_base.sort();
-        provided_names.sort();
-
-        if current_non_base != provided_names {
-            return Err(AppError::ValidationFailed(
-                "Provided layer names must match exactly the existing non-base layers".to_string(),
-            ));
-        }
-
-        // Build reordered list: base first at priority 0, then the rest starting at 1
-        let mut reordered = Vec::with_capacity(mod_project.layers.len());
-        if let Some(mut base) = mod_project
-            .layers
-            .iter()
-            .find(|l| l.name == "base")
-            .cloned()
-        {
-            base.priority = 0;
-            reordered.push(base);
-        }
-        for (i, name) in layer_names.iter().enumerate() {
-            let mut layer = mod_project
-                .layers
-                .iter()
-                .find(|l| &l.name == name)
-                .cloned()
-                .expect("layer existence validated above");
-            layer.priority = (i + 1) as i32;
-            reordered.push(layer);
-        }
-        mod_project.layers = reordered;
-
-        // Save config
-        let json_config_path = path.join("mod.config.json");
-        let config_content = serde_json::to_string_pretty(&mod_project)?;
-        fs::write(&json_config_path, config_content)?;
-
-        load_workshop_project(&path)
+        reorder_layers_at_path(&path, layer_names)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::error::AppError;
     use std::collections::HashMap;
 
     fn make_project_with_layers(dir: &std::path::Path, layers: Vec<ModProjectLayer>) {
@@ -289,37 +311,33 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         make_project_with_layers(dir.path(), ltk_mod_project::default_layers());
 
-        let config_path = find_config_file(dir.path()).unwrap();
-        let mut mod_project = load_mod_project(&config_path).unwrap();
-        let max_priority = mod_project
-            .layers
-            .iter()
-            .map(|l| l.priority)
-            .max()
-            .unwrap_or(-1);
-        mod_project.layers.push(ModProjectLayer {
-            name: "chroma".to_string(),
-            priority: max_priority + 1,
-            description: None,
-            string_overrides: HashMap::new(),
-        });
-        fs::write(
-            dir.path().join("mod.config.json"),
-            serde_json::to_string_pretty(&mod_project).unwrap(),
-        )
-        .unwrap();
+        let project = create_layer_at_path(dir.path(), "chroma", None).unwrap();
+
+        assert_eq!(project.layers.len(), 2);
+        assert_eq!(project.layers[1].name, "chroma");
+        assert_eq!(project.layers[1].priority, 1);
 
         let layers = load_layers(dir.path());
         assert_eq!(layers.len(), 2);
         assert_eq!(layers[1].name, "chroma");
-        assert_eq!(layers[1].priority, 1);
+
+        let chroma_content_dir = dir.path().join("content").join("chroma");
+        assert!(chroma_content_dir.exists());
     }
 
     #[test]
     fn create_layer_invalid_name_rejected() {
-        assert!(!is_valid_project_name("Bad Name"));
-        assert!(!is_valid_project_name("UPPER"));
-        assert!(!is_valid_project_name("has spaces"));
+        let dir = tempfile::tempdir().unwrap();
+        make_project_with_layers(dir.path(), ltk_mod_project::default_layers());
+
+        assert!(matches!(
+            create_layer_at_path(dir.path(), "Bad Name", None),
+            Err(AppError::ValidationFailed(_))
+        ));
+        assert!(matches!(
+            create_layer_at_path(dir.path(), "UPPER", None),
+            Err(AppError::ValidationFailed(_))
+        ));
     }
 
     #[test]
@@ -327,15 +345,21 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         make_project_with_layers(dir.path(), ltk_mod_project::default_layers());
 
-        let config_path = find_config_file(dir.path()).unwrap();
-        let mod_project = load_mod_project(&config_path).unwrap();
-        assert!(mod_project.layers.iter().any(|l| l.name == "base"));
+        assert!(matches!(
+            create_layer_at_path(dir.path(), "base", None),
+            Err(AppError::ValidationFailed(msg)) if msg.contains("already exists")
+        ));
     }
 
     #[test]
     fn delete_base_layer_rejected() {
-        let layer_name = "base";
-        assert_eq!(layer_name, "base");
+        let dir = tempfile::tempdir().unwrap();
+        make_project_with_layers(dir.path(), ltk_mod_project::default_layers());
+
+        assert!(matches!(
+            delete_layer_at_path(dir.path(), "base"),
+            Err(AppError::ValidationFailed(msg)) if msg.contains("base")
+        ));
     }
 
     #[test]
@@ -343,13 +367,10 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         make_project_with_layers(dir.path(), ltk_mod_project::default_layers());
 
-        let config_path = find_config_file(dir.path()).unwrap();
-        let mod_project = load_mod_project(&config_path).unwrap();
-        assert!(mod_project
-            .layers
-            .iter()
-            .position(|l| l.name == "nonexistent")
-            .is_none());
+        assert!(matches!(
+            delete_layer_at_path(dir.path(), "nonexistent"),
+            Err(AppError::ValidationFailed(msg)) if msg.contains("not found")
+        ));
     }
 
     #[test]
@@ -367,20 +388,12 @@ mod tests {
                 },
             ],
         );
+        fs::create_dir_all(dir.path().join("content").join("chroma")).unwrap();
 
-        let config_path = find_config_file(dir.path()).unwrap();
-        let mut mod_project = load_mod_project(&config_path).unwrap();
-        let idx = mod_project
-            .layers
-            .iter()
-            .position(|l| l.name == "chroma")
-            .unwrap();
-        mod_project.layers.remove(idx);
-        fs::write(
-            dir.path().join("mod.config.json"),
-            serde_json::to_string_pretty(&mod_project).unwrap(),
-        )
-        .unwrap();
+        let project = delete_layer_at_path(dir.path(), "chroma").unwrap();
+
+        assert_eq!(project.layers.len(), 1);
+        assert_eq!(project.layers[0].name, "base");
 
         let layers = load_layers(dir.path());
         assert_eq!(layers.len(), 1);
@@ -389,8 +402,31 @@ mod tests {
 
     #[test]
     fn reorder_layers_base_included_rejected() {
-        let layer_names = vec!["base".to_string(), "chroma".to_string()];
-        assert!(layer_names.contains(&"base".to_string()));
+        let dir = tempfile::tempdir().unwrap();
+        make_project_with_layers(
+            dir.path(),
+            vec![
+                ModProjectLayer::base(),
+                ModProjectLayer {
+                    name: "chroma".to_string(),
+                    priority: 1,
+                    description: None,
+                    string_overrides: HashMap::new(),
+                },
+            ],
+        );
+
+        let result =
+            reorder_layers_at_path(dir.path(), vec!["base".to_string(), "chroma".to_string()]);
+        match result {
+            Err(AppError::ValidationFailed(msg)) => {
+                assert!(
+                    msg.to_lowercase().contains("base"),
+                    "expected 'base' in message, got: {msg}"
+                );
+            }
+            other => panic!("expected ValidationFailed, got: {:?}", other),
+        }
     }
 
     #[test]
@@ -415,20 +451,10 @@ mod tests {
             ],
         );
 
-        let config_path = find_config_file(dir.path()).unwrap();
-        let mod_project = load_mod_project(&config_path).unwrap();
-        let mut current_non_base: Vec<String> = mod_project
-            .layers
-            .iter()
-            .filter(|l| l.name != "base")
-            .map(|l| l.name.clone())
-            .collect();
-        current_non_base.sort();
-
-        let mut wrong_names = vec!["chroma".to_string(), "wrong".to_string()];
-        wrong_names.sort();
-
-        assert_ne!(current_non_base, wrong_names);
+        assert!(matches!(
+            reorder_layers_at_path(dir.path(), vec!["chroma".to_string(), "wrong".to_string()]),
+            Err(AppError::ValidationFailed(_))
+        ));
     }
 
     #[test]
@@ -453,44 +479,20 @@ mod tests {
             ],
         );
 
-        let config_path = find_config_file(dir.path()).unwrap();
-        let mut mod_project = load_mod_project(&config_path).unwrap();
-
-        let new_order = vec!["vfx".to_string(), "chroma".to_string()];
-        let mut reordered = Vec::new();
-        if let Some(mut base) = mod_project
-            .layers
-            .iter()
-            .find(|l| l.name == "base")
-            .cloned()
-        {
-            base.priority = 0;
-            reordered.push(base);
-        }
-        for (i, name) in new_order.iter().enumerate() {
-            let mut layer = mod_project
-                .layers
-                .iter()
-                .find(|l| &l.name == name)
-                .cloned()
+        let project =
+            reorder_layers_at_path(dir.path(), vec!["vfx".to_string(), "chroma".to_string()])
                 .unwrap();
-            layer.priority = (i + 1) as i32;
-            reordered.push(layer);
-        }
-        mod_project.layers = reordered;
-        fs::write(
-            dir.path().join("mod.config.json"),
-            serde_json::to_string_pretty(&mod_project).unwrap(),
-        )
-        .unwrap();
+
+        assert_eq!(project.layers[0].name, "base");
+        assert_eq!(project.layers[0].priority, 0);
+        assert_eq!(project.layers[1].name, "vfx");
+        assert_eq!(project.layers[1].priority, 1);
+        assert_eq!(project.layers[2].name, "chroma");
+        assert_eq!(project.layers[2].priority, 2);
 
         let layers = load_layers(dir.path());
-        assert_eq!(layers[0].name, "base");
-        assert_eq!(layers[0].priority, 0);
         assert_eq!(layers[1].name, "vfx");
         assert_eq!(layers[1].priority, 1);
-        assert_eq!(layers[2].name, "chroma");
-        assert_eq!(layers[2].priority, 2);
     }
 
     #[test]
@@ -498,19 +500,17 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         make_project_with_layers(dir.path(), ltk_mod_project::default_layers());
 
-        let config_path = find_config_file(dir.path()).unwrap();
-        let mut mod_project = load_mod_project(&config_path).unwrap();
-        let layer = mod_project
-            .layers
-            .iter_mut()
-            .find(|l| l.name == "base")
-            .unwrap();
-        layer.description = Some("Updated description".to_string());
-        fs::write(
-            dir.path().join("mod.config.json"),
-            serde_json::to_string_pretty(&mod_project).unwrap(),
+        let project = update_layer_description_at_path(
+            dir.path(),
+            "base",
+            Some("Updated description".to_string()),
         )
         .unwrap();
+
+        assert_eq!(
+            project.layers[0].description.as_deref(),
+            Some("Updated description")
+        );
 
         let layers = load_layers(dir.path());
         assert_eq!(
