@@ -2,7 +2,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useEffect, useState } from "react";
 import { LuCircleAlert, LuCircleCheck, LuFolderOpen, LuLoader } from "react-icons/lu";
 
-import { Button, Field, IconButton, SectionCard } from "@/components";
+import { Button, Field, IconButton, SectionCard, Tooltip } from "@/components";
 import { api, type Settings } from "@/lib/tauri";
 import { unwrapForQuery } from "@/utils/query";
 
@@ -81,12 +81,14 @@ export function LeaguePathSection({ settings, onSave }: SettingsSectionProps) {
               </div>
             )}
           </div>
-          <IconButton
-            icon={<LuFolderOpen className="h-5 w-5" />}
-            variant="outline"
-            size="lg"
-            onClick={handleBrowse}
-          />
+          <Tooltip content="Browse">
+            <IconButton
+              icon={<LuFolderOpen className="h-5 w-5" />}
+              variant="outline"
+              size="lg"
+              onClick={handleBrowse}
+            />
+          </Tooltip>
         </div>
         <Button
           variant="transparent"

@@ -8,7 +8,7 @@ import {
   LuTrash2,
 } from "react-icons/lu";
 
-import { Button, IconButton, Menu } from "@/components";
+import { Button, IconButton, Menu, Tooltip } from "@/components";
 import type { WorkshopProject } from "@/lib/tauri";
 import { usePatcherStatus } from "@/modules/patcher";
 
@@ -25,14 +25,16 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
 
   return (
     <div className="flex items-center gap-3 border-b border-surface-700 px-6 py-3">
-      <Link to="/workshop">
-        <IconButton
-          icon={<LuArrowLeft className="h-4 w-4" />}
-          variant="ghost"
-          size="sm"
-          aria-label="Back to Workshop"
-        />
-      </Link>
+      <Tooltip content="Back to Workshop">
+        <Link to="/workshop">
+          <IconButton
+            icon={<LuArrowLeft className="h-4 w-4" />}
+            variant="ghost"
+            size="sm"
+            aria-label="Back to Workshop"
+          />
+        </Link>
+      </Tooltip>
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { LuImage, LuX } from "react-icons/lu";
 
-import { Field, IconButton } from "@/components";
+import { Field, IconButton, Tooltip } from "@/components";
 import type { Settings } from "@/lib/tauri";
 
 import { useDebouncedSlider } from "./useDebouncedSlider";
@@ -46,19 +46,23 @@ export function BackdropImagePicker({ settings, onSave }: BackdropImagePickerPro
           placeholder="No image selected"
           className="flex-1"
         />
-        <IconButton
-          icon={<LuImage className="h-5 w-5" />}
-          variant="outline"
-          size="lg"
-          onClick={handleBrowse}
-        />
-        {settings.backdropImage && (
+        <Tooltip content="Browse image">
           <IconButton
-            icon={<LuX className="h-5 w-5" />}
+            icon={<LuImage className="h-5 w-5" />}
             variant="outline"
             size="lg"
-            onClick={handleClear}
+            onClick={handleBrowse}
           />
+        </Tooltip>
+        {settings.backdropImage && (
+          <Tooltip content="Clear image">
+            <IconButton
+              icon={<LuX className="h-5 w-5" />}
+              variant="outline"
+              size="lg"
+              onClick={handleClear}
+            />
+          </Tooltip>
         )}
       </div>
       <p className="text-sm text-surface-500">

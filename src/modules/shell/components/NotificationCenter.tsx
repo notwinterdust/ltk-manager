@@ -10,7 +10,7 @@ import {
   LuX,
 } from "react-icons/lu";
 
-import { IconButton, Popover, type ToastType } from "@/components";
+import { IconButton, Popover, type ToastType, Tooltip } from "@/components";
 import { type Notification, useNotificationStore } from "@/stores/notifications";
 
 const typeIcons: Record<ToastType, React.ReactNode> = {
@@ -90,14 +90,16 @@ export function NotificationCenter() {
             <div className="flex items-center justify-between border-b border-surface-700 px-3 py-2">
               <Popover.Title>Notifications</Popover.Title>
               {notifications.length > 0 && (
-                <IconButton
-                  icon={<LuTrash2 className="h-3.5 w-3.5" />}
-                  variant="ghost"
-                  size="xs"
-                  onClick={dismissAll}
-                  aria-label="Clear all"
-                  className="text-surface-400 hover:text-surface-200"
-                />
+                <Tooltip content="Clear all">
+                  <IconButton
+                    icon={<LuTrash2 className="h-3.5 w-3.5" />}
+                    variant="ghost"
+                    size="xs"
+                    onClick={dismissAll}
+                    aria-label="Clear all"
+                    className="text-surface-400 hover:text-surface-200"
+                  />
+                </Tooltip>
               )}
             </div>
 

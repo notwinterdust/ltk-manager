@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import { LuCheck, LuFolderOpen, LuPackage, LuX } from "react-icons/lu";
 
-import { Button, Dialog, IconButton, Progress, RadioGroup, SimpleTooltip } from "@/components";
+import { Button, Dialog, IconButton, Progress, RadioGroup, Tooltip } from "@/components";
 import { api, type PackFormat, type PackResult } from "@/lib/tauri";
 import { useWorkshopDialogsStore, useWorkshopSelectionStore } from "@/stores";
 
@@ -155,14 +155,14 @@ export function BulkPackDialog() {
                             {r.displayName}
                           </span>
                           {outcome.ok && (
-                            <SimpleTooltip content="Show in Explorer">
+                            <Tooltip content="Show in Explorer">
                               <IconButton
                                 icon={<LuFolderOpen className="h-3.5 w-3.5" />}
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => api.revealInExplorer(outcome.result.outputPath)}
                               />
-                            </SimpleTooltip>
+                            </Tooltip>
                           )}
                           {!outcome.ok && (
                             <span className="truncate text-xs text-red-400/70">

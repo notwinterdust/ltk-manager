@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { LuTerminal, LuTrash2, LuX } from "react-icons/lu";
 import { twMerge } from "tailwind-merge";
 
-import { IconButton } from "@/components";
+import { IconButton, Tooltip } from "@/components";
 import { isLevelVisible, type LogEntry, useDevConsoleStore } from "@/stores/devConsole";
 
 const levelColors: Record<string, string> = {
@@ -105,22 +105,26 @@ export function DevConsole() {
 
         <span className="ml-auto text-xs text-surface-500">{filteredEntries.length} entries</span>
 
-        <IconButton
-          icon={<LuTrash2 className="h-3.5 w-3.5" />}
-          variant="ghost"
-          size="xs"
-          onClick={clear}
-          aria-label="Clear console"
-          className="text-surface-400 hover:text-surface-200"
-        />
-        <IconButton
-          icon={<LuX className="h-3.5 w-3.5" />}
-          variant="ghost"
-          size="xs"
-          onClick={toggle}
-          aria-label="Close console"
-          className="text-surface-400 hover:text-surface-200"
-        />
+        <Tooltip content="Clear console">
+          <IconButton
+            icon={<LuTrash2 className="h-3.5 w-3.5" />}
+            variant="ghost"
+            size="xs"
+            onClick={clear}
+            aria-label="Clear console"
+            className="text-surface-400 hover:text-surface-200"
+          />
+        </Tooltip>
+        <Tooltip content="Close console">
+          <IconButton
+            icon={<LuX className="h-3.5 w-3.5" />}
+            variant="ghost"
+            size="xs"
+            onClick={toggle}
+            aria-label="Close console"
+            className="text-surface-400 hover:text-surface-200"
+          />
+        </Tooltip>
       </div>
 
       {/* Log entries */}

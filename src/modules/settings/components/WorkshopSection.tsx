@@ -1,7 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { LuFolderOpen } from "react-icons/lu";
 
-import { Field, IconButton, SectionCard } from "@/components";
+import { Field, IconButton, SectionCard, Tooltip } from "@/components";
 import type { Settings } from "@/lib/tauri";
 
 interface WorkshopSectionProps {
@@ -37,12 +37,14 @@ export function WorkshopSection({ settings, onSave }: WorkshopSectionProps) {
             placeholder="Not configured"
             className="flex-1"
           />
-          <IconButton
-            icon={<LuFolderOpen className="h-5 w-5" />}
-            variant="outline"
-            size="lg"
-            onClick={handleBrowse}
-          />
+          <Tooltip content="Browse">
+            <IconButton
+              icon={<LuFolderOpen className="h-5 w-5" />}
+              variant="outline"
+              size="lg"
+              onClick={handleBrowse}
+            />
+          </Tooltip>
         </div>
         <p className="text-sm text-surface-400">
           Choose where your mod projects will be stored for the Creator Workshop. This directory

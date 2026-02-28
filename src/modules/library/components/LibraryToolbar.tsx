@@ -1,6 +1,6 @@
 import { LuFolderOpen, LuGrid3X3, LuList, LuPlus, LuSearch } from "react-icons/lu";
 
-import { Button, IconButton } from "@/components";
+import { Button, IconButton, Tooltip } from "@/components";
 import type { PatcherStatus } from "@/lib/tauri";
 import type { useLibraryActions } from "@/modules/library/api";
 import { useLibraryViewMode } from "@/modules/library/api";
@@ -44,13 +44,14 @@ export function LibraryToolbar({
     >
       <ProfileSelector />
 
-      <IconButton
-        icon={<LuFolderOpen className="h-4 w-4" />}
-        variant="ghost"
-        size="sm"
-        onClick={actions.handleOpenStorageDirectory}
-        title="Open storage directory"
-      />
+      <Tooltip content="Open storage directory">
+        <IconButton
+          icon={<LuFolderOpen className="h-4 w-4" />}
+          variant="ghost"
+          size="sm"
+          onClick={actions.handleOpenStorageDirectory}
+        />
+      </Tooltip>
 
       {/* Search */}
       <div className="relative flex-1">
@@ -68,18 +69,22 @@ export function LibraryToolbar({
 
       {/* View toggle */}
       <div className="flex items-center gap-1">
-        <IconButton
-          icon={<LuGrid3X3 className="h-4 w-4" />}
-          variant={viewMode === "grid" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setViewMode("grid")}
-        />
-        <IconButton
-          icon={<LuList className="h-4 w-4" />}
-          variant={viewMode === "list" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setViewMode("list")}
-        />
+        <Tooltip content="Grid view">
+          <IconButton
+            icon={<LuGrid3X3 className="h-4 w-4" />}
+            variant={viewMode === "grid" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("grid")}
+          />
+        </Tooltip>
+        <Tooltip content="List view">
+          <IconButton
+            icon={<LuList className="h-4 w-4" />}
+            variant={viewMode === "list" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("list")}
+          />
+        </Tooltip>
       </div>
 
       {/* Actions */}

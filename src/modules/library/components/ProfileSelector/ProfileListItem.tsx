@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LuCheck, LuPencil, LuTrash2, LuX } from "react-icons/lu";
 
-import { Button, Field, IconButton, useToast } from "@/components";
+import { Button, Field, IconButton, Tooltip, useToast } from "@/components";
 import type { Profile } from "@/lib/tauri";
 import { useRenameProfile } from "@/modules/library/api";
 
@@ -115,22 +115,24 @@ export function ProfileListItem({
 
       {!isDefaultProfile && (
         <>
-          <IconButton
-            icon={<LuPencil className="h-3.5 w-3.5" />}
-            variant="ghost"
-            size="xs"
-            onClick={startEditing}
-            title="Rename profile"
-          />
-          <IconButton
-            icon={<LuTrash2 className="h-3.5 w-3.5" />}
-            variant="ghost"
-            size="xs"
-            onClick={() => onDeleteClick(profile)}
-            disabled={isActive}
-            className="hover:text-red-400"
-            title="Delete profile"
-          />
+          <Tooltip content="Rename profile">
+            <IconButton
+              icon={<LuPencil className="h-3.5 w-3.5" />}
+              variant="ghost"
+              size="xs"
+              onClick={startEditing}
+            />
+          </Tooltip>
+          <Tooltip content="Delete profile">
+            <IconButton
+              icon={<LuTrash2 className="h-3.5 w-3.5" />}
+              variant="ghost"
+              size="xs"
+              onClick={() => onDeleteClick(profile)}
+              disabled={isActive}
+              className="hover:text-red-400"
+            />
+          </Tooltip>
         </>
       )}
     </div>

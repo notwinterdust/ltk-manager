@@ -1,6 +1,6 @@
 import { LuCircleAlert, LuDownload, LuRefreshCw, LuX } from "react-icons/lu";
 
-import { Button, IconButton, Progress } from "@/components";
+import { Button, IconButton, Progress, Tooltip } from "@/components";
 
 import type { UseUpdateCheckReturn } from "../hooks/useUpdateCheck";
 
@@ -27,14 +27,16 @@ export function UpdateNotification({ updateState }: UpdateNotificationProps) {
           <p className="text-sm font-medium text-red-100">Update Error</p>
           <p className="text-xs text-red-300">{error}</p>
         </div>
-        <IconButton
-          icon={<LuX className="h-4 w-4" />}
-          variant="ghost"
-          size="xs"
-          onClick={dismiss}
-          aria-label="Dismiss error"
-          className="text-red-300 hover:bg-red-800/50 hover:text-red-100"
-        />
+        <Tooltip content="Dismiss">
+          <IconButton
+            icon={<LuX className="h-4 w-4" />}
+            variant="ghost"
+            size="xs"
+            onClick={dismiss}
+            aria-label="Dismiss error"
+            className="text-red-300 hover:bg-red-800/50 hover:text-red-100"
+          />
+        </Tooltip>
       </div>
     );
   }
@@ -79,14 +81,16 @@ export function UpdateNotification({ updateState }: UpdateNotificationProps) {
           >
             Update Now
           </Button>
-          <IconButton
-            icon={<LuX className="h-4 w-4" />}
-            variant="ghost"
-            size="xs"
-            onClick={dismiss}
-            aria-label="Dismiss"
-            className="text-accent-300 hover:bg-accent-600/30 hover:text-accent-100"
-          />
+          <Tooltip content="Dismiss">
+            <IconButton
+              icon={<LuX className="h-4 w-4" />}
+              variant="ghost"
+              size="xs"
+              onClick={dismiss}
+              aria-label="Dismiss"
+              className="text-accent-300 hover:bg-accent-600/30 hover:text-accent-100"
+            />
+          </Tooltip>
         </div>
       </div>
     );

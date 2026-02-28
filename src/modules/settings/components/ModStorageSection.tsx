@@ -1,7 +1,7 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { LuFolderOpen } from "react-icons/lu";
 
-import { Field, IconButton, SectionCard } from "@/components";
+import { Field, IconButton, SectionCard, Tooltip } from "@/components";
 import type { Settings } from "@/lib/tauri";
 
 interface ModStorageSectionProps {
@@ -37,12 +37,14 @@ export function ModStorageSection({ settings, onSave }: ModStorageSectionProps) 
             placeholder="Default (app data directory)"
             className="flex-1"
           />
-          <IconButton
-            icon={<LuFolderOpen className="h-5 w-5" />}
-            variant="outline"
-            size="lg"
-            onClick={handleBrowse}
-          />
+          <Tooltip content="Browse">
+            <IconButton
+              icon={<LuFolderOpen className="h-5 w-5" />}
+              variant="outline"
+              size="lg"
+              onClick={handleBrowse}
+            />
+          </Tooltip>
         </div>
         <p className="text-sm text-surface-400">
           Choose where your installed mods will be stored. Leave empty to use the default location.

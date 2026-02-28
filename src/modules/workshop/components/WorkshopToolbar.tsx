@@ -12,7 +12,7 @@ import {
   LuSquareCheckBig,
 } from "react-icons/lu";
 
-import { Button, IconButton, Menu } from "@/components";
+import { Button, IconButton, Menu, Tooltip } from "@/components";
 import { usePatcherStatus } from "@/modules/patcher";
 import { useWorkshopDialogsStore, useWorkshopSelectionStore, useWorkshopViewStore } from "@/stores";
 
@@ -86,29 +86,35 @@ export function WorkshopToolbar() {
       </div>
 
       <div className="flex items-center gap-1">
-        <IconButton
-          icon={<LuGrid3X3 className="h-4 w-4" />}
-          variant={viewMode === "grid" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setViewMode("grid")}
-        />
-        <IconButton
-          icon={<LuList className="h-4 w-4" />}
-          variant={viewMode === "list" ? "default" : "ghost"}
-          size="sm"
-          onClick={() => setViewMode("list")}
-        />
+        <Tooltip content="Grid view">
+          <IconButton
+            icon={<LuGrid3X3 className="h-4 w-4" />}
+            variant={viewMode === "grid" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("grid")}
+          />
+        </Tooltip>
+        <Tooltip content="List view">
+          <IconButton
+            icon={<LuList className="h-4 w-4" />}
+            variant={viewMode === "list" ? "default" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("list")}
+          />
+        </Tooltip>
       </div>
 
       {!isPatcherActive && (
         <>
-          <IconButton
-            icon={<LuSquareCheckBig className="h-4 w-4" />}
-            variant="ghost"
-            size="sm"
-            onClick={() => selectAll(filteredProjects.map((p) => p.path))}
-            aria-label="Select all projects"
-          />
+          <Tooltip content="Select all">
+            <IconButton
+              icon={<LuSquareCheckBig className="h-4 w-4" />}
+              variant="ghost"
+              size="sm"
+              onClick={() => selectAll(filteredProjects.map((p) => p.path))}
+              aria-label="Select all projects"
+            />
+          </Tooltip>
           <ActionsMenu />
         </>
       )}

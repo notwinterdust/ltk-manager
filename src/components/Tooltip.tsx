@@ -125,8 +125,8 @@ export const TooltipArrow = forwardRef<HTMLDivElement, TooltipArrowProps>(
 );
 TooltipArrow.displayName = "Tooltip.Arrow";
 
-// Compound export
-export const Tooltip = {
+// Compound export (primitives for advanced/custom tooltip layouts)
+export const TooltipPrimitives = {
   Provider: TooltipProvider,
   Root: TooltipRoot,
   Trigger: TooltipTrigger,
@@ -136,8 +136,7 @@ export const Tooltip = {
   Arrow: TooltipArrow,
 };
 
-// Simplified Tooltip component for common use cases
-export interface SimpleTooltipProps {
+export interface TooltipProps {
   content: ReactNode;
   children: ReactNode;
   side?: "top" | "right" | "bottom" | "left";
@@ -146,14 +145,14 @@ export interface SimpleTooltipProps {
   showArrow?: boolean;
 }
 
-export function SimpleTooltip({
+export function Tooltip({
   content,
   children,
   side = "top",
   align = "center",
   sideOffset = 8,
   showArrow = true,
-}: SimpleTooltipProps) {
+}: TooltipProps) {
   return (
     <BaseTooltip.Root>
       <BaseTooltip.Trigger className="inline-flex">{children}</BaseTooltip.Trigger>

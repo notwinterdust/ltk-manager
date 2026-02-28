@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { LuGlobe, LuPlus, LuTrash2 } from "react-icons/lu";
 
-import { Button, Field, IconButton, Tabs, useToast } from "@/components";
+import { Button, Field, IconButton, Tabs, Tooltip, useToast } from "@/components";
 import type { WorkshopLayer } from "@/lib/tauri";
 import { useProjectContext, useSaveStringOverrides } from "@/modules/workshop";
 
@@ -253,13 +253,15 @@ function ProjectStrings() {
                   />
                 </Field.Root>
 
-                <IconButton
-                  icon={<LuTrash2 className="h-4 w-4" />}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveEntry(index)}
-                  className="mt-1"
-                />
+                <Tooltip content="Delete entry">
+                  <IconButton
+                    icon={<LuTrash2 className="h-4 w-4" />}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemoveEntry(index)}
+                    className="mt-1"
+                  />
+                </Tooltip>
               </div>
             ))}
           </div>

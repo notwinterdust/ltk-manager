@@ -14,7 +14,7 @@ import {
 } from "react-icons/lu";
 import { twMerge } from "tailwind-merge";
 
-import { IconButton, SimpleTooltip } from "@/components";
+import { IconButton, Tooltip } from "@/components";
 import type { AppInfo } from "@/lib/tauri";
 
 import { NotificationCenter } from "./NotificationCenter";
@@ -135,7 +135,7 @@ export function TitleBar({ title = "LTK Manager", appInfo }: TitleBarProps) {
       <div className="flex h-full items-center">
         <NotificationCenter />
 
-        <SimpleTooltip content="Report a Bug">
+        <Tooltip content="Report a Bug">
           <IconButton
             icon={<LuAccessibility className="h-5 w-5" />}
             variant="ghost"
@@ -144,7 +144,7 @@ export function TitleBar({ title = "LTK Manager", appInfo }: TitleBarProps) {
             aria-label="Report a Bug"
             className="text-surface-400 hover:text-surface-200"
           />
-        </SimpleTooltip>
+        </Tooltip>
 
         {/* Settings button */}
         <Link

@@ -1,6 +1,6 @@
 import { LuFilter, LuX } from "react-icons/lu";
 
-import { Checkbox, IconButton, Popover } from "@/components";
+import { Checkbox, IconButton, Popover, Tooltip } from "@/components";
 import type { FilterOptions } from "@/modules/library/api";
 import { getMapLabel, getTagLabel } from "@/modules/library/utils/labels";
 import { useHasActiveFilters, useLibraryFilterStore } from "@/stores";
@@ -30,23 +30,24 @@ export function FilterPopover({ filterOptions }: FilterPopoverProps) {
 
   return (
     <Popover.Root>
-      <Popover.Trigger
-        render={
-          <IconButton
-            icon={
-              <div className="relative">
-                <LuFilter className="h-4 w-4" />
-                {hasActive && (
-                  <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-brand-500" />
-                )}
-              </div>
-            }
-            variant="ghost"
-            size="sm"
-            title="Filter mods"
-          />
-        }
-      />
+      <Tooltip content="Filter mods">
+        <Popover.Trigger
+          render={
+            <IconButton
+              icon={
+                <div className="relative">
+                  <LuFilter className="h-4 w-4" />
+                  {hasActive && (
+                    <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-brand-500" />
+                  )}
+                </div>
+              }
+              variant="ghost"
+              size="sm"
+            />
+          }
+        />
+      </Tooltip>
       <Popover.Portal>
         <Popover.Positioner side="bottom" align="start" sideOffset={8}>
           <Popover.Popup className="w-64 p-3">
