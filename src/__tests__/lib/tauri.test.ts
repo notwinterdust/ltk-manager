@@ -1,6 +1,5 @@
+import { api } from "@/lib/tauri";
 import { mockInvoke } from "@/test/mocks/tauri";
-
-import { api } from "./tauri";
 
 describe("api", () => {
   beforeEach(() => {

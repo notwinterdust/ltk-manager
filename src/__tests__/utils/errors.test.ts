@@ -1,6 +1,5 @@
 import type { AppError } from "@/lib/bindings";
-
-import { getInvalidPathContext, getModNotFoundContext, hasErrorCode } from "./errors";
+import { getInvalidPathContext, getModNotFoundContext, hasErrorCode } from "@/utils/errors";
 
 function makeError(code: string, context?: unknown): AppError {
   return {

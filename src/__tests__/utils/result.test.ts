@@ -1,5 +1,15 @@
-import type { Result } from "./result";
-import { andThen, isErr, isOk, map, mapErr, match, unwrap, unwrapOr, unwrapOrElse } from "./result";
+import type { Result } from "@/utils/result";
+import {
+  andThen,
+  isErr,
+  isOk,
+  map,
+  mapErr,
+  match,
+  unwrap,
+  unwrapOr,
+  unwrapOrElse,
+} from "@/utils/result";
 
 const ok = <T>(value: T): Result<T, string> => ({ ok: true, value });
 const err = <T>(error: string): Result<T, string> => ({ ok: false, error });

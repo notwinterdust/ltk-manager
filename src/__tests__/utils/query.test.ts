@@ -1,5 +1,5 @@
-import { mutationFn, queryFn, queryFnWithArgs, unwrapForQuery } from "./query";
-import type { Result } from "./result";
+import { mutationFn, queryFn, queryFnWithArgs, unwrapForQuery } from "@/utils/query";
+import type { Result } from "@/utils/result";
 
 const ok = <T>(value: T): Result<T, string> => ({ ok: true, value });
 const err = <T>(error: string): Result<T, string> => ({ ok: false, error });
