@@ -1,6 +1,12 @@
 name: Release
 
 on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version bump: patch, minor, major, or explicit (e.g. 1.2.3)"
+        required: true
+        type: string
   push:
     tags:
       - "v*"
@@ -21,14 +27,34 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract version from tag
+      - name: Resolve version
         id: version
         shell: bash
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
-          VERSION="${TAG#v}"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            INPUT="${{ inputs.version }}"
+            CURRENT=$(node -p "require('./package.json').version")
+            IFS='.' read -r MAJ MIN PAT <<< "$CURRENT"
+
+            case "$INPUT" in
+              patch) VERSION="$MAJ.$MIN.$((PAT + 1))" ;;
+              minor) VERSION="$MAJ.$((MIN + 1)).0" ;;
+              major) VERSION="$((MAJ + 1)).0.0" ;;
+              *)
+                if [[ ! "$INPUT" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
+                  echo "::error::Invalid version: $INPUT (expected patch, minor, major, or semver like 1.2.3)"
+                  exit 1
+                fi
+                VERSION="$INPUT"
+                ;;
+            esac
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+            VERSION="${TAG#v}"
+          fi
+
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
           if [[ "$VERSION" == *-* ]]; then
             echo "prerelease=true" >> "$GITHUB_OUTPUT"
@@ -36,7 +62,35 @@ jobs:
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
           fi
 
+          echo "::notice::Releasing v$VERSION"
+
+      - name: Bump version and tag
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          # Update package.json
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            pkg.version = '$VERSION';
+            fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          "
+
+          # Update Cargo.toml
+          sed -i "0,/^version = \".*\"/s//version = \"$VERSION\"/" src-tauri/Cargo.toml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json src-tauri/Cargo.toml
+          git commit -m "chore: release v$VERSION"
+          git tag "v$VERSION"
+          git push origin HEAD:main
+          git push origin "v$VERSION"
+
       - name: Validate version consistency
+        if: github.event_name == 'push'
         shell: bash
         run: |
           CARGO_VERSION=$(sed -n 's/^version = "\(.*\)"/\1/p' src-tauri/Cargo.toml | head -1)
