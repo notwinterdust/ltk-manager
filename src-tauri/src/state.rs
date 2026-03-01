@@ -143,6 +143,15 @@ pub struct Settings {
     /// Whether the user has dismissed the cslol-manager migration banner.
     #[serde(default)]
     pub migration_dismissed: bool,
+    /// Global hotkey accelerator for reloading mods (e.g. "Ctrl+Shift+R").
+    #[serde(default)]
+    pub reload_mods_hotkey: Option<String>,
+    /// Global hotkey accelerator for killing League (e.g. "Ctrl+Shift+K").
+    #[serde(default)]
+    pub kill_league_hotkey: Option<String>,
+    /// Whether the kill-league hotkey should also stop the patcher. Default: true.
+    #[serde(default = "default_true")]
+    pub kill_league_stops_patcher: bool,
 }
 
 impl Default for Settings {
@@ -160,6 +169,9 @@ impl Default for Settings {
             patch_tft: false,
             minimize_to_tray: true,
             migration_dismissed: false,
+            reload_mods_hotkey: None,
+            kill_league_hotkey: None,
+            kill_league_stops_patcher: true,
         }
     }
 }
@@ -179,6 +191,9 @@ mod tests {
         assert!(!settings.patch_tft);
         assert!(settings.minimize_to_tray);
         assert!(!settings.migration_dismissed);
+        assert!(settings.reload_mods_hotkey.is_none());
+        assert!(settings.kill_league_hotkey.is_none());
+        assert!(settings.kill_league_stops_patcher);
     }
 
     #[test]
@@ -199,6 +214,9 @@ mod tests {
             patch_tft: true,
             minimize_to_tray: true,
             migration_dismissed: false,
+            reload_mods_hotkey: Some("Ctrl+Shift+R".to_string()),
+            kill_league_hotkey: None,
+            kill_league_stops_patcher: true,
         };
         let json = serde_json::to_string(&settings).unwrap();
         let deserialized: Settings = serde_json::from_str(&json).unwrap();
@@ -238,5 +256,14 @@ mod tests {
         assert!(settings.league_path.is_none());
         assert!(settings.mod_storage_path.is_none());
         assert!(!settings.first_run_complete);
+    }
+
+    #[test]
+    fn kill_league_stops_patcher_defaults_to_true() {
+        let json = r#"{"firstRunComplete": false, "theme": "system", "accentColor": {}, "patchTft": false, "migrationDismissed": false}"#;
+        let settings: Settings = serde_json::from_str(json).unwrap();
+        assert!(settings.kill_league_stops_patcher);
+        assert!(settings.reload_mods_hotkey.is_none());
+        assert!(settings.kill_league_hotkey.is_none());
     }
 }

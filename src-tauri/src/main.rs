@@ -88,6 +88,7 @@ fn main() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(move |app| {
             let app_handle = app.handle();
 
@@ -103,6 +104,9 @@ fn main() {
 
             // Run first-run initialization (auto-detect League path)
             initialize_first_run(app_handle, &settings_state);
+
+            // Register persisted global hotkeys before managing state (moves settings_state)
+            commands::hotkeys::register_startup_hotkeys(app_handle, &settings_state);
 
             // Manage each state separately
             app.manage(settings_state);
@@ -154,6 +158,11 @@ fn main() {
             commands::start_patcher,
             commands::stop_patcher,
             commands::get_patcher_status,
+            // Hotkeys
+            commands::set_reload_mods_hotkey,
+            commands::set_kill_league_hotkey,
+            commands::hot_reload_mods,
+            commands::kill_league,
             // Profiles
             commands::list_mod_profiles,
             commands::get_active_mod_profile,

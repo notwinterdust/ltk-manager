@@ -5,7 +5,7 @@ use crate::legacy_patcher::runner::{
 };
 use crate::mods::ModLibraryState;
 use crate::overlay;
-use crate::patcher::{PatcherPhase, PatcherState};
+use crate::patcher::{PatcherPhase, PatcherState, StoredPatcherConfig};
 use crate::state::SettingsState;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -127,7 +127,7 @@ pub fn start_patcher(
     result.into()
 }
 
-fn start_patcher_inner(
+pub(crate) fn start_patcher_inner(
     config: PatcherConfig,
     app_handle: &AppHandle,
     state: &State<PatcherState>,
@@ -153,6 +153,17 @@ fn start_patcher_inner(
     // Resolve DLL path and snapshot settings — quick operations done on the calling thread
     let dll_path = resolve_patcher_dll_path(app_handle)?;
     tracing::info!("Using patcher DLL: {}", dll_path.display());
+
+    // Stash config for hot-reload
+    {
+        let mut patcher_state = state.0.lock().mutex_err()?;
+        patcher_state.last_config = Some(StoredPatcherConfig {
+            log_file: config.log_file.clone(),
+            timeout_ms: config.timeout_ms,
+            flags: config.flags,
+            workshop_projects: config.workshop_projects.clone(),
+        });
+    }
 
     let log_file = config.log_file.clone();
     let timeout_ms = config.timeout_ms.unwrap_or(DEFAULT_HOOK_TIMEOUT_MS);
@@ -260,7 +271,7 @@ pub fn stop_patcher(state: State<PatcherState>) -> IpcResult<()> {
     stop_patcher_inner(&state).into()
 }
 
-fn stop_patcher_inner(state: &State<PatcherState>) -> AppResult<()> {
+pub(crate) fn stop_patcher_inner(state: &State<PatcherState>) -> AppResult<()> {
     let patcher_state = state.0.lock().mutex_err()?;
 
     if !patcher_state.is_running() {

@@ -84,6 +84,14 @@ export const api = {
   stopPatcher: () => invokeResult<void>("stop_patcher"),
   getPatcherStatus: () => invokeResult<PatcherStatus>("get_patcher_status"),
 
+  // Hotkeys
+  setReloadModsHotkey: (accelerator: string | null) =>
+    invokeResult<void>("set_reload_mods_hotkey", { accelerator }),
+  setKillLeagueHotkey: (accelerator: string | null) =>
+    invokeResult<void>("set_kill_league_hotkey", { accelerator }),
+  hotReloadMods: () => invokeResult<void>("hot_reload_mods"),
+  killLeague: () => invokeResult<void>("kill_league"),
+
   // Profiles
   listModProfiles: () => invokeResult<Profile[]>("list_mod_profiles"),
   getActiveModProfile: () => invokeResult<Profile>("get_active_mod_profile"),

@@ -14,6 +14,9 @@ export function createMockSettings(overrides?: Partial<Settings>): Settings {
     patchTft: false,
     minimizeToTray: true,
     migrationDismissed: false,
+    reloadModsHotkey: null,
+    killLeagueHotkey: null,
+    killLeagueStopsPatcher: true,
     ...overrides,
   };
 }

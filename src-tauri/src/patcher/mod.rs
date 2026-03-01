@@ -32,6 +32,15 @@ impl Default for PatcherState {
     }
 }
 
+/// Stored patcher configuration for hot-reload (re-start with the same options).
+#[derive(Debug, Clone)]
+pub struct StoredPatcherConfig {
+    pub log_file: Option<String>,
+    pub timeout_ms: Option<u32>,
+    pub flags: Option<u64>,
+    pub workshop_projects: Option<Vec<String>>,
+}
+
 pub struct PatcherStateInner {
     /// Flag to signal the patcher thread to stop.
     pub stop_flag: Arc<AtomicBool>,
@@ -41,6 +50,8 @@ pub struct PatcherStateInner {
     pub config_path: Option<String>,
     /// Current phase of the patcher lifecycle.
     pub phase: PatcherPhase,
+    /// Last patcher config used, for hot-reload.
+    pub last_config: Option<StoredPatcherConfig>,
 }
 
 impl PatcherStateInner {
@@ -50,6 +61,7 @@ impl PatcherStateInner {
             thread_handle: None,
             config_path: None,
             phase: PatcherPhase::Idle,
+            last_config: None,
         }
     }
 
