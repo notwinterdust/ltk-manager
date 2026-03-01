@@ -35,6 +35,10 @@ export type Settings = {
    */
   patchTft: boolean;
   /**
+   * Whether to minimize to system tray instead of taskbar. Default: true.
+   */
+  minimizeToTray: boolean;
+  /**
    * Whether the user has dismissed the cslol-manager migration banner.
    */
   migrationDismissed: boolean;

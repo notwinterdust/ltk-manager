@@ -4,6 +4,7 @@ import type { Settings } from "@/lib/tauri";
 import { MigrationSection, MigrationWizardDialog } from "@/modules/migration";
 
 import { LeaguePathSection } from "./LeaguePathSection";
+import { MinimizeToTraySection } from "./MinimizeToTraySection";
 import { ModStorageSection } from "./ModStorageSection";
 import { PatchingSection } from "./PatchingSection";
 import { WorkshopSection } from "./WorkshopSection";
@@ -20,6 +21,7 @@ export function GeneralSection({ settings, onSave }: GeneralSectionProps) {
     <div className="space-y-4">
       <LeaguePathSection settings={settings} onSave={onSave} />
       <PatchingSection settings={settings} onSave={onSave} />
+      <MinimizeToTraySection settings={settings} onSave={onSave} />
       <ModStorageSection settings={settings} onSave={onSave} />
       <WorkshopSection settings={settings} onSave={onSave} />
       <MigrationSection onImport={() => setMigrationOpen(true)} />

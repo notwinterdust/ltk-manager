@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
-use crate::error::{AppError, AppResult, IpcResult};
+use crate::error::{AppError, AppResult, IpcResult, MutexResultExt};
+use crate::state::SettingsState;
 
 /// Opens a file location in the system file explorer.
 #[tauri::command]
@@ -40,6 +41,35 @@ fn reveal_in_explorer_inner(path: &str) -> AppResult<()> {
             .arg(dir)
             .spawn()
             .map_err(|e| AppError::Other(format!("Failed to open file manager: {}", e)))?;
+    }
+
+    Ok(())
+}
+
+/// Minimizes the window to the system tray if the setting is enabled,
+/// otherwise performs a regular minimize.
+#[tauri::command]
+pub fn minimize_to_tray(
+    window: tauri::WebviewWindow,
+    state: tauri::State<SettingsState>,
+) -> IpcResult<()> {
+    minimize_to_tray_inner(window, &state).into()
+}
+
+fn minimize_to_tray_inner(
+    window: tauri::WebviewWindow,
+    state: &tauri::State<SettingsState>,
+) -> AppResult<()> {
+    let settings = state.0.lock().mutex_err()?;
+
+    if settings.minimize_to_tray {
+        window
+            .hide()
+            .map_err(|e| AppError::Other(format!("Failed to hide window: {}", e)))?;
+    } else {
+        window
+            .minimize()
+            .map_err(|e| AppError::Other(format!("Failed to minimize window: {}", e)))?;
     }
 
     Ok(())

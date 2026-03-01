@@ -3,6 +3,7 @@
     windows_subsystem = "windows"
 )]
 
+use tauri::tray::TrayIconBuilder;
 use tauri::Manager;
 use tracing_appender::{non_blocking::WorkerGuard, rolling};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -109,6 +110,22 @@ fn main() {
             app.manage(mod_library);
             app.manage(workshop);
 
+            // Set up system tray icon
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().cloned().unwrap())
+                .tooltip("LTK Manager")
+                .on_tray_icon_event(|tray, event| {
+                    if let tauri::tray::TrayIconEvent::DoubleClick { .. } = event {
+                        let app = tray.app_handle();
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.unminimize();
+                            let _ = window.set_focus();
+                        }
+                    }
+                })
+                .build(app)?;
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -146,6 +163,7 @@ fn main() {
             commands::rename_mod_profile,
             // Shell
             commands::reveal_in_explorer,
+            commands::minimize_to_tray,
             // Workshop
             commands::get_workshop_projects,
             commands::create_workshop_project,

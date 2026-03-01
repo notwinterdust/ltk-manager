@@ -15,7 +15,7 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import { IconButton, Tooltip } from "@/components";
-import type { AppInfo } from "@/lib/tauri";
+import { api, type AppInfo } from "@/lib/tauri";
 
 import { NotificationCenter } from "./NotificationCenter";
 
@@ -100,7 +100,9 @@ export function TitleBar({ title = "LTK Manager", appInfo }: TitleBarProps) {
     };
   }, [appWindow]);
 
-  const handleMinimize = () => appWindow.minimize();
+  const handleMinimize = () => {
+    api.minimizeToTray();
+  };
   const handleMaximize = () => appWindow.toggleMaximize();
   const handleClose = () => appWindow.close();
 

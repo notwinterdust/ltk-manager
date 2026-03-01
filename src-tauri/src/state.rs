@@ -107,7 +107,11 @@ pub struct AccentColor {
     pub custom_hue: Option<f32>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Default, TS)]
+fn default_true() -> bool {
+    true
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Settings {
@@ -133,9 +137,31 @@ pub struct Settings {
     /// Whether to patch TFT game files (Map22.wad.client). Default: false.
     #[serde(default)]
     pub patch_tft: bool,
+    /// Whether to minimize to system tray instead of taskbar. Default: true.
+    #[serde(default = "default_true")]
+    pub minimize_to_tray: bool,
     /// Whether the user has dismissed the cslol-manager migration banner.
     #[serde(default)]
     pub migration_dismissed: bool,
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            league_path: None,
+            mod_storage_path: None,
+            workshop_path: None,
+            first_run_complete: false,
+            theme: Theme::default(),
+            accent_color: AccentColor::default(),
+            backdrop_image: None,
+            backdrop_blur: None,
+            library_view_mode: None,
+            patch_tft: false,
+            minimize_to_tray: true,
+            migration_dismissed: false,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -151,6 +177,7 @@ mod tests {
         assert!(!settings.first_run_complete);
         assert_eq!(settings.theme, Theme::System);
         assert!(!settings.patch_tft);
+        assert!(settings.minimize_to_tray);
         assert!(!settings.migration_dismissed);
     }
 
@@ -170,6 +197,7 @@ mod tests {
             backdrop_blur: Some(40),
             library_view_mode: Some("list".to_string()),
             patch_tft: true,
+            minimize_to_tray: true,
             migration_dismissed: false,
         };
         let json = serde_json::to_string(&settings).unwrap();

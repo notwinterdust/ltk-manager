@@ -12,6 +12,7 @@ export function createMockSettings(overrides?: Partial<Settings>): Settings {
     backdropBlur: null,
     libraryViewMode: "grid",
     patchTft: false,
+    minimizeToTray: true,
     migrationDismissed: false,
     ...overrides,
   };

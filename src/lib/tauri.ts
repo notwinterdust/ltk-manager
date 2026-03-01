@@ -96,6 +96,7 @@ export const api = {
 
   // Shell
   revealInExplorer: (path: string) => invokeResult<void>("reveal_in_explorer", { path }),
+  minimizeToTray: () => invokeResult<void>("minimize_to_tray"),
 
   // Workshop
   getWorkshopProjects: () => invokeResult<WorkshopProject[]>("get_workshop_projects"),
