@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import {
   DragDropOverlay,
@@ -35,6 +36,22 @@ export function Library() {
 
   const filterOptions = useFilterOptions(mods);
   const hasEnabledMods = mods.some((m) => m.enabled);
+
+  useHotkeys("ctrl+i", () => actions.handleInstallMod(), {
+    preventDefault: true,
+    enabled: !isPatcherActive,
+  });
+  useHotkeys(
+    "ctrl+p",
+    () => {
+      if (patcherStatus?.running) {
+        handleStopPatcher();
+      } else {
+        handleStartPatcher();
+      }
+    },
+    { preventDefault: true },
+  );
 
   function handleStartPatcher() {
     startPatcher.mutate(

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { LuTerminal, LuTrash2, LuX } from "react-icons/lu";
 import { twMerge } from "tailwind-merge";
 
@@ -42,17 +43,7 @@ export function DevConsole() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const shouldAutoScroll = useRef(true);
 
-  // Keyboard shortcut: Ctrl+Shift+D
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && e.code === "KeyD") {
-        e.preventDefault();
-        toggle();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [toggle]);
+  useHotkeys("ctrl+shift+d", toggle, { preventDefault: true });
 
   // Auto-scroll to bottom when new entries arrive
   useEffect(() => {

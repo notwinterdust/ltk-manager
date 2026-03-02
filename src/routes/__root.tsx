@@ -1,5 +1,6 @@
 import { createRootRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import { StatusBar } from "@/modules/patcher";
 import { useAppInfo, useCheckSetupRequired } from "@/modules/settings";
@@ -15,6 +16,18 @@ function RootLayout() {
   const { data: setupRequired, isLoading: isCheckingSetup } = useCheckSetupRequired();
 
   useDevLogStream();
+
+  useHotkeys("ctrl+1", () => navigate({ to: "/" }), { preventDefault: true });
+  useHotkeys("ctrl+2", () => navigate({ to: "/workshop" }), { preventDefault: true });
+  useHotkeys("ctrl+,", () => navigate({ to: "/settings" }), { preventDefault: true });
+  useHotkeys(
+    "ctrl+f",
+    () => {
+      const input = document.querySelector<HTMLInputElement>('input[placeholder*="Search"]');
+      input?.focus();
+    },
+    { preventDefault: true, enableOnFormTags: true },
+  );
 
   // Redirect to settings if setup is required
   useEffect(() => {

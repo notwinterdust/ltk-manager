@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useHotkeys } from "react-hotkeys-hook";
 
 import type { WorkshopProject } from "@/lib/tauri";
 import {
@@ -18,7 +19,7 @@ import {
   useWorkshopProjects,
   WorkshopToolbar,
 } from "@/modules/workshop";
-import { useWorkshopViewStore } from "@/stores";
+import { useWorkshopDialogsStore, useWorkshopSelectionStore, useWorkshopViewStore } from "@/stores";
 
 export const Route = createFileRoute("/workshop/")({
   component: WorkshopIndex,
@@ -29,6 +30,14 @@ function WorkshopIndex() {
   const { isLoading, error } = useWorkshopProjects();
   const searchQuery = useWorkshopViewStore((s) => s.searchQuery);
   const filteredProjects = useFilteredProjects();
+
+  const openNewProjectDialog = useWorkshopDialogsStore((s) => s.openNewProjectDialog);
+  const selectAll = useWorkshopSelectionStore((s) => s.selectAll);
+
+  useHotkeys("ctrl+n", () => openNewProjectDialog(), { preventDefault: true });
+  useHotkeys("ctrl+a", () => selectAll(filteredProjects.map((p) => p.path)), {
+    preventDefault: true,
+  });
 
   function handleEditProject(project: WorkshopProject) {
     navigate({ to: "/workshop/$projectName", params: { projectName: project.name } });

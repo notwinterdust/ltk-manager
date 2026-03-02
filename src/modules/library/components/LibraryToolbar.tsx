@@ -1,6 +1,6 @@
 import { LuFolderOpen, LuGrid3X3, LuList, LuPlus, LuSearch } from "react-icons/lu";
 
-import { Button, IconButton, Tooltip } from "@/components";
+import { Button, IconButton, Kbd, Tooltip } from "@/components";
 import type { PatcherStatus } from "@/lib/tauri";
 import type { useLibraryActions } from "@/modules/library/api";
 import { useLibraryViewMode } from "@/modules/library/api";
@@ -88,49 +88,67 @@ export function LibraryToolbar({
       </div>
 
       {/* Actions */}
-      <Button
-        variant="filled"
-        size="sm"
-        onClick={actions.handleInstallMod}
-        loading={actions.installMod.isPending || actions.bulkInstallMods.isPending}
-        disabled={isPatcherActive}
-        left={<LuPlus className="h-4 w-4" />}
+      <Tooltip
+        content={
+          <>
+            Add mod <Kbd shortcut="Ctrl+I" />
+          </>
+        }
       >
-        {actions.installMod.isPending || actions.bulkInstallMods.isPending
-          ? "Installing..."
-          : "Add Mod"}
-      </Button>
+        <Button
+          variant="filled"
+          size="sm"
+          onClick={actions.handleInstallMod}
+          loading={actions.installMod.isPending || actions.bulkInstallMods.isPending}
+          disabled={isPatcherActive}
+          left={<LuPlus className="h-4 w-4" />}
+        >
+          {actions.installMod.isPending || actions.bulkInstallMods.isPending
+            ? "Installing..."
+            : "Add Mod"}
+        </Button>
+      </Tooltip>
 
-      {patcher.status?.running ? (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={patcher.onStop}
-          loading={patcher.isStopping}
-          disabled={
-            actions.installMod.isPending || actions.bulkInstallMods.isPending || patcher.isStopping
-          }
-        >
-          {patcher.isStopping ? "Stopping..." : "Stop Patcher"}
-        </Button>
-      ) : (
-        <Button
-          variant={hasEnabledMods ? "filled" : "default"}
-          size="sm"
-          onClick={patcher.onStart}
-          loading={patcher.isStarting}
-          disabled={
-            isLoading ||
-            !hasEnabledMods ||
-            actions.installMod.isPending ||
-            actions.bulkInstallMods.isPending ||
-            patcher.isStopping ||
-            patcher.isStarting
-          }
-        >
-          {patcher.isStarting ? "Starting..." : "Start Patcher"}
-        </Button>
-      )}
+      <Tooltip
+        content={
+          <>
+            Toggle patcher <Kbd shortcut="Ctrl+P" />
+          </>
+        }
+      >
+        {patcher.status?.running ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={patcher.onStop}
+            loading={patcher.isStopping}
+            disabled={
+              actions.installMod.isPending ||
+              actions.bulkInstallMods.isPending ||
+              patcher.isStopping
+            }
+          >
+            {patcher.isStopping ? "Stopping..." : "Stop Patcher"}
+          </Button>
+        ) : (
+          <Button
+            variant={hasEnabledMods ? "filled" : "default"}
+            size="sm"
+            onClick={patcher.onStart}
+            loading={patcher.isStarting}
+            disabled={
+              isLoading ||
+              !hasEnabledMods ||
+              actions.installMod.isPending ||
+              actions.bulkInstallMods.isPending ||
+              patcher.isStopping ||
+              patcher.isStarting
+            }
+          >
+            {patcher.isStarting ? "Starting..." : "Start Patcher"}
+          </Button>
+        )}
+      </Tooltip>
     </div>
   );
 }

@@ -2,6 +2,8 @@ import { Menu as BaseMenu } from "@base-ui-components/react/menu";
 import { forwardRef, type ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 
+import { Kbd } from "./Kbd";
+
 // Root
 export interface MenuRootProps extends BaseMenu.Root.Props {
   children?: ReactNode;
@@ -94,6 +96,7 @@ export type MenuItemVariant = "default" | "danger";
 
 export interface MenuItemProps extends Omit<BaseMenu.Item.Props, "className"> {
   icon?: ReactNode;
+  shortcut?: string;
   variant?: MenuItemVariant;
   className?: string;
   children?: ReactNode;
@@ -105,7 +108,7 @@ const itemVariantClasses: Record<MenuItemVariant, string> = {
 };
 
 export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
-  ({ icon, variant = "default", className, children, ...props }, ref) => {
+  ({ icon, shortcut, variant = "default", className, children, ...props }, ref) => {
     return (
       <BaseMenu.Item
         ref={ref}
@@ -117,7 +120,8 @@ export const MenuItem = forwardRef<HTMLDivElement, MenuItemProps>(
         {...props}
       >
         {icon && <span className="h-4 w-4 shrink-0">{icon}</span>}
-        {children}
+        <span className="flex-1">{children}</span>
+        {shortcut && <Kbd shortcut={shortcut} />}
       </BaseMenu.Item>
     );
   },

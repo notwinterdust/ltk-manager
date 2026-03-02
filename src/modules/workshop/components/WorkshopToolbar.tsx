@@ -12,7 +12,7 @@ import {
   LuSquareCheckBig,
 } from "react-icons/lu";
 
-import { Button, IconButton, Menu, Tooltip } from "@/components";
+import { Button, IconButton, Kbd, Menu, Tooltip } from "@/components";
 import { usePatcherStatus } from "@/modules/patcher";
 import { useWorkshopDialogsStore, useWorkshopSelectionStore, useWorkshopViewStore } from "@/stores";
 
@@ -106,7 +106,13 @@ export function WorkshopToolbar() {
 
       {!isPatcherActive && (
         <>
-          <Tooltip content="Select all">
+          <Tooltip
+            content={
+              <>
+                Select all <Kbd shortcut="Ctrl+A" />
+              </>
+            }
+          >
             <IconButton
               icon={<LuSquareCheckBig className="h-4 w-4" />}
               variant="ghost"
@@ -149,14 +155,22 @@ export function WorkshopToolbar() {
           </Menu.Positioner>
         </Menu.Portal>
       </Menu.Root>
-      <Button
-        variant="filled"
-        size="sm"
-        onClick={openNewProjectDialog}
-        left={<LuPlus className="h-4 w-4" />}
+      <Tooltip
+        content={
+          <>
+            New project <Kbd shortcut="Ctrl+N" />
+          </>
+        }
       >
-        New Project
-      </Button>
+        <Button
+          variant="filled"
+          size="sm"
+          onClick={openNewProjectDialog}
+          left={<LuPlus className="h-4 w-4" />}
+        >
+          New Project
+        </Button>
+      </Tooltip>
     </div>
   );
 }
