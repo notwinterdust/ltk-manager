@@ -17,15 +17,17 @@
 //! See `docs/ERROR_HANDLING.md` for details.
 
 mod app;
+pub(crate) mod hotkeys;
 mod migration;
 mod mods;
-mod patcher;
+pub(crate) mod patcher;
 mod profiles;
 mod settings;
 mod shell;
 mod workshop;
 
 pub use app::*;
+pub use hotkeys::*;
 pub use migration::*;
 pub use mods::*;
 pub use patcher::*;

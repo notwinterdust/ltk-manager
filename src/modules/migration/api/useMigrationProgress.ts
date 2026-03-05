@@ -1,37 +1,21 @@
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { InstallProgress, MigrationProgress } from "@/lib/tauri";
+import { useTauriEvent } from "@/lib/useTauriEvent";
 
 export function useMigrationProgress() {
   const [progress, setProgress] = useState<MigrationProgress | null>(null);
 
-  useEffect(() => {
-    let unlistenMigration: UnlistenFn | null = null;
-    let unlistenInstall: UnlistenFn | null = null;
+  useTauriEvent<MigrationProgress>("migration-progress", setProgress);
 
-    listen<MigrationProgress>("migration-progress", (event) => {
-      setProgress(event.payload);
-    }).then((fn) => {
-      unlistenMigration = fn;
+  useTauriEvent<InstallProgress>("install-progress", (payload) => {
+    setProgress({
+      phase: "installing",
+      current: payload.current,
+      total: payload.total,
+      currentFile: payload.currentFile,
     });
-
-    listen<InstallProgress>("install-progress", (event) => {
-      setProgress({
-        phase: "installing",
-        current: event.payload.current,
-        total: event.payload.total,
-        currentFile: event.payload.currentFile,
-      });
-    }).then((fn) => {
-      unlistenInstall = fn;
-    });
-
-    return () => {
-      unlistenMigration?.();
-      unlistenInstall?.();
-    };
-  }, []);
+  });
 
   function reset() {
     setProgress(null);

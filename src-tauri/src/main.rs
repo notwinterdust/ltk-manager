@@ -10,6 +10,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod commands;
 mod error;
+mod hotkeys;
 mod legacy_patcher;
 #[cfg(debug_assertions)]
 mod log_layer;
@@ -88,6 +89,7 @@ fn main() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(move |app| {
             let app_handle = app.handle();
 
@@ -104,11 +106,19 @@ fn main() {
             // Run first-run initialization (auto-detect League path)
             initialize_first_run(app_handle, &settings_state);
 
+            // Register persisted global hotkeys
+            let hotkey_manager = hotkeys::HotkeyManager::new(app_handle);
+            {
+                let settings = settings_state.0.lock().unwrap();
+                hotkey_manager.register_from_settings(&settings);
+            }
+
             // Manage each state separately
             app.manage(settings_state);
             app.manage(patcher_state);
             app.manage(mod_library);
             app.manage(workshop);
+            app.manage(hotkey_manager);
 
             // Set up system tray icon
             let _tray = TrayIconBuilder::new()
@@ -154,6 +164,12 @@ fn main() {
             commands::start_patcher,
             commands::stop_patcher,
             commands::get_patcher_status,
+            // Hotkeys
+            commands::pause_hotkeys,
+            commands::resume_hotkeys,
+            commands::set_hotkey,
+            commands::hot_reload_mods,
+            commands::kill_league,
             // Profiles
             commands::list_mod_profiles,
             commands::get_active_mod_profile,

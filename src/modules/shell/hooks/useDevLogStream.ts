@@ -1,6 +1,4 @@
-import { listen, type UnlistenFn } from "@tauri-apps/api/event";
-import { useEffect } from "react";
-
+import { useTauriEvent } from "@/lib/useTauriEvent";
 import { useDevConsoleStore } from "@/stores/devConsole";
 
 interface LogEventPayload {
@@ -13,27 +11,7 @@ interface LogEventPayload {
 export function useDevLogStream() {
   const addEntry = useDevConsoleStore((s) => s.addEntry);
 
-  useEffect(() => {
-    if (!import.meta.env.DEV) return;
-
-    let unlisten: UnlistenFn | null = null;
-    let canceled = false;
-
-    listen<LogEventPayload>("log-event", (event) => {
-      addEntry(event.payload);
-    }).then((fn) => {
-      if (canceled) {
-        fn();
-      } else {
-        unlisten = fn;
-      }
-    });
-
-    return () => {
-      canceled = true;
-      if (unlisten) {
-        unlisten();
-      }
-    };
-  }, [addEntry]);
+  useTauriEvent<LogEventPayload>(import.meta.env.DEV ? "log-event" : null, (payload) => {
+    addEntry(payload);
+  });
 }

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { Button, Dialog } from "@/components";
+import { Button, Dialog, useToast } from "@/components";
 import { useAppForm } from "@/lib/form";
 import { useWorkshopDialogsStore } from "@/stores";
 
@@ -31,6 +31,7 @@ export function NewProjectDialog() {
   const open = useWorkshopDialogsStore((s) => s.newProjectOpen);
   const closeDialog = useWorkshopDialogsStore((s) => s.closeNewProjectDialog);
   const createProject = useCreateProject();
+  const toast = useToast();
 
   const form = useAppForm({
     defaultValues: {
@@ -55,7 +56,9 @@ export function NewProjectDialog() {
             form.reset();
             closeDialog();
           },
-          onError: (err) => console.error("Failed to create project:", err.message),
+          onError: (err) => {
+            toast.error("Failed to create project", err.message);
+          },
         },
       );
     },

@@ -1,11 +1,12 @@
 import { getRouteApi } from "@tanstack/react-router";
-import { LuInfo, LuLoader, LuPalette, LuSettings } from "react-icons/lu";
+import { LuInfo, LuKeyboard, LuLoader, LuPalette, LuSettings } from "react-icons/lu";
 
 import { Tabs } from "@/components";
 import {
   AboutSection,
   AppearanceSection,
   GeneralSection,
+  HotkeySection,
   useAppInfo,
   useSaveSettings,
   useSettings,
@@ -52,6 +53,14 @@ export function Settings() {
           </Tabs.Tab>
           <Tabs.Tab
             variant="pills"
+            value="hotkeys"
+            className="flex items-center gap-2.5 text-left data-active:bg-brand-500/15 data-active:text-brand-300"
+          >
+            <LuKeyboard className="h-4 w-4 shrink-0" />
+            Hotkeys
+          </Tabs.Tab>
+          <Tabs.Tab
+            variant="pills"
             value="appearance"
             className="flex items-center gap-2.5 text-left data-active:bg-brand-500/15 data-active:text-brand-300"
           >
@@ -83,6 +92,10 @@ export function Settings() {
               </div>
             )}
             <GeneralSection settings={settings} onSave={saveSettings} />
+          </Tabs.Panel>
+
+          <Tabs.Panel value="hotkeys" className="mx-auto max-w-2xl p-6">
+            <HotkeySection settings={settings} onSave={saveSettings} />
           </Tabs.Panel>
 
           <Tabs.Panel value="appearance" className="mx-auto max-w-2xl p-6">

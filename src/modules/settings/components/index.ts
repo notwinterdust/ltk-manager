@@ -1,6 +1,7 @@
 export { AboutSection } from "./AboutSection";
 export { AppearanceSection } from "./AppearanceSection";
 export { GeneralSection } from "./GeneralSection";
+export { HotkeySection } from "./HotkeySection";
 export { LeaguePathSection } from "./LeaguePathSection";
 export { MinimizeToTraySection } from "./MinimizeToTraySection";
 export { ModStorageSection } from "./ModStorageSection";

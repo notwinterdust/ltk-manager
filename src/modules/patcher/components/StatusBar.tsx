@@ -5,7 +5,13 @@ import { Button, Progress } from "@/components";
 import type { OverlayProgress } from "@/lib/tauri";
 import { usePatcherSessionStore } from "@/stores";
 
-import { useOverlayProgress, usePatcherError, usePatcherStatus, useStopPatcher } from "../api";
+import {
+  useHotkeyEvents,
+  useOverlayProgress,
+  usePatcherError,
+  usePatcherStatus,
+  useStopPatcher,
+} from "../api";
 
 const stageLabels: Record<OverlayProgress["stage"], string> = {
   indexing: "Indexing game files...",
@@ -24,6 +30,7 @@ export function StatusBar() {
   const overlayProgress = useOverlayProgress();
   const stopPatcher = useStopPatcher();
   usePatcherError();
+  useHotkeyEvents();
 
   const testingProjects = usePatcherSessionStore((s) => s.testingProjects);
   const clearTestingProjects = usePatcherSessionStore((s) => s.clearTestingProjects);

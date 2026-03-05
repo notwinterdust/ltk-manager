@@ -11,6 +11,7 @@ export type { FantomeImportStage } from "./FantomeImportStage";
 export type { FantomePeekResult } from "./FantomePeekResult";
 export type { GitImportProgress } from "./GitImportProgress";
 export type { GitImportStage } from "./GitImportStage";
+export type { HotkeyAction } from "./HotkeyAction";
 export type { ImportFantomeArgs } from "./ImportFantomeArgs";
 export type { ImportGitRepoArgs } from "./ImportGitRepoArgs";
 export type { InstalledMod } from "./InstalledMod";

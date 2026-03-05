@@ -7,6 +7,7 @@ import type {
   CreateProjectArgs,
   CslolModInfo,
   FantomePeekResult,
+  HotkeyAction,
   ImportFantomeArgs,
   ImportGitRepoArgs,
   InstalledMod,
@@ -83,6 +84,14 @@ export const api = {
   startPatcher: (config: PatcherConfig) => invokeResult<void>("start_patcher", { config }),
   stopPatcher: () => invokeResult<void>("stop_patcher"),
   getPatcherStatus: () => invokeResult<PatcherStatus>("get_patcher_status"),
+
+  // Hotkeys
+  pauseHotkeys: () => invokeResult<void>("pause_hotkeys"),
+  resumeHotkeys: () => invokeResult<void>("resume_hotkeys"),
+  setHotkey: (action: HotkeyAction, accelerator: string | null) =>
+    invokeResult<void>("set_hotkey", { action, accelerator }),
+  hotReloadMods: () => invokeResult<void>("hot_reload_mods"),
+  killLeague: () => invokeResult<void>("kill_league"),
 
   // Profiles
   listModProfiles: () => invokeResult<Profile[]>("list_mod_profiles"),

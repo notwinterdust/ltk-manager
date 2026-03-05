@@ -42,4 +42,16 @@ export type Settings = {
    * Whether the user has dismissed the cslol-manager migration banner.
    */
   migrationDismissed: boolean;
+  /**
+   * Global hotkey accelerator for reloading mods (e.g. "Ctrl+Shift+R").
+   */
+  reloadModsHotkey: string | null;
+  /**
+   * Global hotkey accelerator for killing League (e.g. "Ctrl+Shift+K").
+   */
+  killLeagueHotkey: string | null;
+  /**
+   * Whether the kill-league hotkey should also stop the patcher. Default: true.
+   */
+  killLeagueStopsPatcher: boolean;
 };
