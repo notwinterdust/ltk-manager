@@ -1,0 +1,35 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { api, type AppError, type InstalledMod } from "@/lib/tauri";
+import { useDeepLinkStore } from "@/stores";
+import { unwrapForQuery } from "@/utils/query";
+
+import { libraryKeys } from "../../library/api/keys";
+
+interface ProtocolInstallVars {
+  url: string;
+  name?: string | null;
+  author?: string | null;
+  source?: string | null;
+}
+
+export function useProtocolInstall() {
+  const queryClient = useQueryClient();
+
+  return useMutation<InstalledMod, AppError, ProtocolInstallVars>({
+    mutationFn: async ({ url, name, author, source }) => {
+      useDeepLinkStore.getState().setStatus("installing");
+      const result = await api.deepLinkInstallMod(url, name, author, source);
+      return unwrapForQuery(result);
+    },
+    onSuccess: (newMod) => {
+      useDeepLinkStore.getState().setStatus("complete");
+      queryClient.setQueryData<InstalledMod[]>(libraryKeys.mods(), (old) =>
+        old ? [...old, newMod] : [newMod],
+      );
+    },
+    onError: (error) => {
+      useDeepLinkStore.getState().setError(error.message);
+    },
+  });
+}

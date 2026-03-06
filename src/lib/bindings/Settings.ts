@@ -54,4 +54,8 @@ export type Settings = {
    * Whether the kill-league hotkey should also stop the patcher. Default: true.
    */
   killLeagueStopsPatcher: boolean;
+  /**
+   * Trusted domains for protocol installs. Downloads are only allowed from these domains.
+   */
+  trustedDomains: Array<string>;
 };

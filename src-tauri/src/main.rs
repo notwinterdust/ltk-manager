@@ -4,11 +4,13 @@
 )]
 
 use tauri::tray::TrayIconBuilder;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
+use tauri_plugin_deep_link::DeepLinkExt;
 use tracing_appender::{non_blocking::WorkerGuard, rolling};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod commands;
+mod deep_link;
 mod error;
 mod hotkeys;
 mod legacy_patcher;
@@ -21,6 +23,7 @@ mod state;
 mod utils;
 mod workshop;
 
+use deep_link::DeepLinkState;
 use mods::{ModLibrary, ModLibraryState};
 use patcher::PatcherState;
 use state::SettingsState;
@@ -84,6 +87,11 @@ fn main() {
     }
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            // When a second instance is launched with a deep-link URL, forward it here
+            handle_deep_link_argv(app, &argv);
+        }))
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
@@ -113,12 +121,15 @@ fn main() {
                 hotkey_manager.register_from_settings(&settings);
             }
 
+            let deep_link_state = DeepLinkState::new();
+
             // Manage each state separately
             app.manage(settings_state);
             app.manage(patcher_state);
             app.manage(mod_library);
             app.manage(workshop);
             app.manage(hotkey_manager);
+            app.manage(deep_link_state);
 
             // Set up system tray icon
             let _tray = TrayIconBuilder::new()
@@ -135,6 +146,17 @@ fn main() {
                     }
                 })
                 .build(app)?;
+
+            // Check for deep-link URLs passed at launch
+            if let Ok(Some(urls)) = app.deep_link().get_current() {
+                handle_deep_link_urls(app_handle, &urls);
+            }
+
+            // Listen for deep-link URLs received while app is running
+            let handle_clone = app_handle.clone();
+            app.deep_link().on_open_url(move |event| {
+                handle_deep_link_urls(&handle_clone, &event.urls());
+            });
 
             Ok(())
         })
@@ -200,9 +222,82 @@ fn main() {
             commands::delete_project_layer,
             commands::reorder_project_layers,
             commands::update_layer_description,
+            // Deep Link
+            commands::deep_link_install_mod,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+/// Process deep-link URLs and emit events to the frontend.
+fn handle_deep_link_urls(app_handle: &tauri::AppHandle, urls: &[url::Url]) {
+    for url in urls {
+        handle_single_deep_link(app_handle, url.as_str());
+    }
+}
+
+/// Process deep-link URLs from CLI argv (used by single-instance callback).
+fn handle_deep_link_argv(app_handle: &tauri::AppHandle, argv: &[String]) {
+    for arg in argv.iter().skip(1) {
+        if arg.starts_with("ltk://") {
+            handle_single_deep_link(app_handle, arg);
+        }
+    }
+
+    // Focus the existing window
+    if let Some(window) = app_handle.get_webview_window("main") {
+        let _ = window.show();
+        let _ = window.unminimize();
+        let _ = window.set_focus();
+    }
+}
+
+fn handle_single_deep_link(app_handle: &tauri::AppHandle, raw_url: &str) {
+    tracing::info!("Received deep-link: {}", raw_url);
+
+    let deep_link_state: tauri::State<'_, DeepLinkState> = app_handle.state();
+    if deep_link_state.should_rate_limit() {
+        tracing::warn!("Deep-link rate-limited, ignoring: {}", raw_url);
+        return;
+    }
+
+    match deep_link::parse_deep_link_url(raw_url) {
+        Ok(request) => {
+            tracing::info!("Parsed deep-link install request: {:?}", request);
+
+            let settings_state: tauri::State<'_, SettingsState> = app_handle.state();
+            if let Ok(settings) = settings_state.0.lock() {
+                if !settings.trusted_domains.is_empty() {
+                    if let Ok(parsed) = url::Url::parse(&request.url) {
+                        let host = parsed.host_str().unwrap_or("");
+                        let is_trusted = settings
+                            .trusted_domains
+                            .iter()
+                            .any(|d| host == d.as_str() || host.ends_with(&format!(".{d}")));
+                        if !is_trusted {
+                            tracing::warn!(
+                                "Deep-link blocked: domain '{}' not in trusted list",
+                                host
+                            );
+                            let _ = app_handle.emit(
+                                "deep-link-blocked",
+                                serde_json::json!({
+                                    "domain": host,
+                                    "url": request.url,
+                                }),
+                            );
+                            return;
+                        }
+                    }
+                }
+            }
+
+            let _ = app_handle.emit("deep-link-install", &request);
+        }
+        Err(e) => {
+            tracing::error!("Failed to parse deep-link URL: {}", e);
+        }
+    }
 }
 
 #[cfg(debug_assertions)]

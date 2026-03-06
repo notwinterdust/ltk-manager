@@ -48,6 +48,26 @@ async function invokeResult<T>(cmd: string, args?: Record<string, unknown>): Pro
   return toResult(response);
 }
 
+// Deep-link protocol types
+export type DeepLinkInstallRequest = {
+  url: string;
+  name: string | null;
+  author: string | null;
+  source: string | null;
+};
+
+export type ProtocolInstallProgress = {
+  stage: "downloading" | "validating" | "installing" | "complete" | "error";
+  bytesDownloaded: number;
+  totalBytes: number | null;
+  error: string | null;
+};
+
+export type DeepLinkBlockedPayload = {
+  domain: string;
+  url: string;
+};
+
 // API functions
 export const api = {
   getAppInfo: () => invokeResult<AppInfo>("get_app_info"),
@@ -102,6 +122,14 @@ export const api = {
     invokeResult<Profile>("switch_mod_profile", { profileId }),
   renameModProfile: (profileId: string, newName: string) =>
     invokeResult<Profile>("rename_mod_profile", { profileId, newName }),
+
+  // Deep Link
+  deepLinkInstallMod: (
+    url: string,
+    name?: string | null,
+    author?: string | null,
+    source?: string | null,
+  ) => invokeResult<InstalledMod>("deep_link_install_mod", { url, name, author, source }),
 
   // Shell
   revealInExplorer: (path: string) => invokeResult<void>("reveal_in_explorer", { path }),

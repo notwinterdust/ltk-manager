@@ -17,6 +17,7 @@
 //! See `docs/ERROR_HANDLING.md` for details.
 
 mod app;
+mod deep_link;
 pub(crate) mod hotkeys;
 mod migration;
 mod mods;
@@ -27,6 +28,7 @@ mod shell;
 mod workshop;
 
 pub use app::*;
+pub use deep_link::*;
 pub use hotkeys::*;
 pub use migration::*;
 pub use mods::*;

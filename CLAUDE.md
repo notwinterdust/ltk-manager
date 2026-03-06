@@ -1,4 +1,4 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -141,7 +141,7 @@ TanStack Router with file-based routing in `src/routes/`. Route tree is auto-gen
 
 **Available components:**
 | Component | Usage | Base-UI Primitive |
-| ------------------------------------------------------------------- | -------------------------------- | --------------------- |
+| ------------------------------------------------------------------------------------------------------------------------------ | -------------------------------- | --------------------- |
 | `Button`, `IconButton` | All clickable actions | `Button` |
 | `Field`, `FormField`, `TextareaField` | All form inputs (text, textarea) | `Field` |
 | `Checkbox`, `CheckboxGroup` | Boolean/multi-select inputs | `Checkbox` |
@@ -156,7 +156,7 @@ TanStack Router with file-based routing in `src/routes/`. Route tree is auto-gen
 
 **Not yet wrapped (needed):**
 | Component | Priority | Current Workaround |
-| ---------------------- | -------- | -------------------------------------------------- |
+| ------------ | -------- | --------------------------------- |
 | `Progress` | LOW | Custom overlay progress rendering |
 | `ScrollArea` | LOW | Native scrollbars |
 

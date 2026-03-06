@@ -1,4 +1,4 @@
-import { Toast as BaseToast } from "@base-ui-components/react/toast";
+import { Toast as BaseToast } from "@base-ui/react/toast";
 import { type ReactNode } from "react";
 import { LuCircleAlert, LuCircleCheck, LuCircleX, LuInfo, LuX } from "react-icons/lu";
 import { twMerge } from "tailwind-merge";

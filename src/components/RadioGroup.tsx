@@ -1,8 +1,5 @@
-import { Radio } from "@base-ui-components/react/radio";
-import {
-  RadioGroup as BaseRadioGroup,
-  type RadioGroupProps,
-} from "@base-ui-components/react/radio-group";
+import { Radio } from "@base-ui/react/radio";
+import { RadioGroup as BaseRadioGroup, type RadioGroupProps } from "@base-ui/react/radio-group";
 import { forwardRef, type ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 

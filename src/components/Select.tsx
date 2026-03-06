@@ -1,4 +1,4 @@
-import { Select as BaseSelect } from "@base-ui-components/react/select";
+import { Select as BaseSelect } from "@base-ui/react/select";
 import { forwardRef, type ReactNode } from "react";
 import { LuCheck, LuChevronDown } from "react-icons/lu";
 import { twMerge } from "tailwind-merge";

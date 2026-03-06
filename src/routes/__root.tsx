@@ -2,6 +2,7 @@ import { createRootRoute, Outlet, useLocation, useNavigate } from "@tanstack/rea
 import { useEffect } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
+import { ProtocolInstallDialog, useDeepLinkListener } from "@/modules/deep-link";
 import { StatusBar } from "@/modules/patcher";
 import { useAppInfo, useCheckSetupRequired } from "@/modules/settings";
 import { DevConsole, TitleBar, useDevLogStream } from "@/modules/shell";
@@ -16,6 +17,7 @@ function RootLayout() {
   const { data: setupRequired, isLoading: isCheckingSetup } = useCheckSetupRequired();
 
   useDevLogStream();
+  useDeepLinkListener();
 
   useHotkeys("ctrl+1", () => navigate({ to: "/" }), { preventDefault: true });
   useHotkeys("ctrl+2", () => navigate({ to: "/workshop" }), { preventDefault: true });
@@ -53,6 +55,7 @@ function RootLayout() {
         <Outlet />
       </main>
       <StatusBar />
+      <ProtocolInstallDialog />
       {import.meta.env.DEV && <DevConsole />}
     </div>
   );

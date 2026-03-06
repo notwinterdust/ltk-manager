@@ -1,4 +1,4 @@
-import { Progress as BaseProgress } from "@base-ui-components/react/progress";
+import { Progress as BaseProgress } from "@base-ui/react/progress";
 import { forwardRef, type ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 

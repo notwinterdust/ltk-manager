@@ -1,4 +1,4 @@
-import { Dialog as BaseDialog } from "@base-ui-components/react/dialog";
+import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import { forwardRef, type ReactNode } from "react";
 import { LuX } from "react-icons/lu";
 import { twMerge } from "tailwind-merge";

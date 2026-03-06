@@ -1,4 +1,4 @@
-import { Combobox as BaseCombobox } from "@base-ui-components/react/combobox";
+import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
 import { useMemo } from "react";
 import { LuCheck, LuChevronDown } from "react-icons/lu";
 import { twMerge } from "tailwind-merge";

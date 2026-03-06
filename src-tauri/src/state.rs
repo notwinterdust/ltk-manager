@@ -111,6 +111,10 @@ fn default_true() -> bool {
     true
 }
 
+fn default_trusted_domains() -> Vec<String> {
+    vec!["runeforge.dev".to_string(), "divineskins.gg".to_string()]
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -152,6 +156,9 @@ pub struct Settings {
     /// Whether the kill-league hotkey should also stop the patcher. Default: true.
     #[serde(default = "default_true")]
     pub kill_league_stops_patcher: bool,
+    /// Trusted domains for protocol installs. Downloads are only allowed from these domains.
+    #[serde(default = "default_trusted_domains")]
+    pub trusted_domains: Vec<String>,
 }
 
 impl Default for Settings {
@@ -172,6 +179,7 @@ impl Default for Settings {
             reload_mods_hotkey: None,
             kill_league_hotkey: None,
             kill_league_stops_patcher: true,
+            trusted_domains: default_trusted_domains(),
         }
     }
 }
@@ -217,6 +225,7 @@ mod tests {
             reload_mods_hotkey: Some("Ctrl+Shift+R".to_string()),
             kill_league_hotkey: None,
             kill_league_stops_patcher: true,
+            trusted_domains: vec!["runeforge.dev".to_string()],
         };
         let json = serde_json::to_string(&settings).unwrap();
         let deserialized: Settings = serde_json::from_str(&json).unwrap();

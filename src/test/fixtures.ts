@@ -17,6 +17,7 @@ export function createMockSettings(overrides?: Partial<Settings>): Settings {
     reloadModsHotkey: null,
     killLeagueHotkey: null,
     killLeagueStopsPatcher: true,
+    trustedDomains: ["runeforge.dev", "divineskins.gg"],
     ...overrides,
   };
 }

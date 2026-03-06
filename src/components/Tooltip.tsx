@@ -1,5 +1,5 @@
-import { Tooltip as BaseTooltip } from "@base-ui-components/react/tooltip";
-import { forwardRef, type ReactNode } from "react";
+import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
+import { forwardRef, type ReactElement, type ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
 
 // Root/Provider
@@ -138,7 +138,7 @@ export const TooltipPrimitives = {
 
 export interface TooltipProps {
   content: ReactNode;
-  children: ReactNode;
+  children: ReactElement<Record<string, unknown>>;
   side?: "top" | "right" | "bottom" | "left";
   align?: "start" | "center" | "end";
   sideOffset?: number;
@@ -155,7 +155,7 @@ export function Tooltip({
 }: TooltipProps) {
   return (
     <BaseTooltip.Root>
-      <BaseTooltip.Trigger className="inline-flex">{children}</BaseTooltip.Trigger>
+      <BaseTooltip.Trigger render={children} />
       <BaseTooltip.Portal>
         <BaseTooltip.Positioner side={side} align={align} sideOffset={sideOffset} className="z-50">
           <BaseTooltip.Popup

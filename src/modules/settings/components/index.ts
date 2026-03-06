@@ -6,4 +6,5 @@ export { LeaguePathSection } from "./LeaguePathSection";
 export { MinimizeToTraySection } from "./MinimizeToTraySection";
 export { ModStorageSection } from "./ModStorageSection";
 export { PatchingSection } from "./PatchingSection";
+export { TrustedDomainsSection } from "./TrustedDomainsSection";
 export { WorkshopSection } from "./WorkshopSection";

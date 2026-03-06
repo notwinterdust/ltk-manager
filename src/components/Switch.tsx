@@ -1,4 +1,4 @@
-import { Switch as BaseSwitch } from "@base-ui-components/react/switch";
+import { Switch as BaseSwitch } from "@base-ui/react/switch";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
