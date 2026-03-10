@@ -48,7 +48,7 @@ impl ModLibrary {
     }
 
     /// Reorder all mods for the active profile.
-    /// The provided `mod_ids` must exactly match all installed mod IDs.
+    /// The provided `mod_ids` must exactly match the active profile's mod order.
     /// The `enabled_mods` order is derived from the new display order.
     pub fn reorder_mods(&self, settings: &Settings, mod_ids: Vec<String>) -> AppResult<()> {
         self.mutate_index(settings, |_storage_dir, index| {

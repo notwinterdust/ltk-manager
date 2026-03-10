@@ -357,9 +357,8 @@ pub(super) fn library_index_path(storage_dir: &Path) -> PathBuf {
     storage_dir.join("library.json")
 }
 
-/// Load the library index from disk, reconciling any orphaned entries in memory.
-/// Returns `(index, reconciled)` — the caller is responsible for saving if needed.
-/// Creates a default index if the file doesn't exist.
+/// Load the library index from disk.
+/// Returns a default index if the file doesn't exist.
 pub(super) fn load_library_index(storage_dir: &Path) -> AppResult<LibraryIndex> {
     fs::create_dir_all(storage_dir)?;
 

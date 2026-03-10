@@ -49,7 +49,7 @@ fn is_within_suppress_window(last_mutation: &Arc<AtomicI64>) -> bool {
     if last == 0 {
         return false;
     }
-    let elapsed_ms = epoch_ms_now() - last;
+    let elapsed_ms = (epoch_ms_now() - last).max(0);
     elapsed_ms < WATCHER_SUPPRESS_SECS * 1000
 }
 
