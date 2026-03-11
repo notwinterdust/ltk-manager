@@ -31,16 +31,16 @@ pub fn run_legacy_patcher_loop(
 ) -> Result<(), LegacyPatcherLoopError> {
     let api = PatcherApi::load(dll_path)?;
 
-    tracing::info!("Legacy patcher: set_flags({})", flags);
+    tracing::debug!("Legacy patcher: set_flags({})", flags);
     api.set_flags(flags)?;
-    tracing::info!("Legacy patcher: init()");
+    tracing::debug!("Legacy patcher: init()");
     api.init()?;
-    tracing::info!("Legacy patcher: set_config(prefix='{}')", overlay_root);
+    tracing::debug!("Legacy patcher: set_config(prefix='{}')", overlay_root);
     api.set_config(overlay_root)?;
     api.set_log_level(CSLogLevel::Info)?;
 
     if let Some(log_path) = log_file {
-        tracing::info!("Legacy patcher: set_log_file('{}')", log_path);
+        tracing::debug!("Legacy patcher: set_log_file('{}')", log_path);
         api.set_log_file(log_path)?;
     }
 
@@ -61,7 +61,7 @@ pub fn run_legacy_patcher_loop(
                 Some(tid) => break tid.get(),
                 None => {
                     if last_wait_log.elapsed() >= Duration::from_secs(5) {
-                        tracing::info!("Still waiting for game process...");
+                        tracing::trace!("Still waiting for game process...");
                         last_wait_log = Instant::now();
                     }
                     api.sleep(100);
