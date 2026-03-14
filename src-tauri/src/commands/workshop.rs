@@ -138,6 +138,14 @@ pub fn set_project_thumbnail(
 }
 
 #[tauri::command]
+pub fn remove_project_thumbnail(
+    project_path: String,
+    workshop: State<WorkshopState>,
+) -> IpcResult<WorkshopProject> {
+    workshop.0.remove_thumbnail(&project_path).into()
+}
+
+#[tauri::command]
 pub fn get_project_thumbnail(
     thumbnail_path: String,
     workshop: State<WorkshopState>,

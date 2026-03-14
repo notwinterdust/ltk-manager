@@ -160,6 +160,8 @@ export const api = {
     invokeResult<ValidationResult>("validate_project", { projectPath }),
   setProjectThumbnail: (projectPath: string, imagePath: string) =>
     invokeResult<WorkshopProject>("set_project_thumbnail", { projectPath, imagePath }),
+  removeProjectThumbnail: (projectPath: string) =>
+    invokeResult<WorkshopProject>("remove_project_thumbnail", { projectPath }),
   getProjectThumbnail: (thumbnailPath: string) =>
     invokeResult<string>("get_project_thumbnail", { thumbnailPath }),
   saveLayerStringOverrides: (

@@ -234,6 +234,33 @@ impl Workshop {
         load_workshop_project(&project_dir)
     }
 
+    /// Remove a project's thumbnail image.
+    pub fn remove_thumbnail(&self, project_path: &str) -> AppResult<WorkshopProject> {
+        let project_dir = PathBuf::from(project_path);
+        if !project_dir.exists() {
+            return Err(AppError::ProjectNotFound(project_path.to_string()));
+        }
+
+        if find_config_file(&project_dir).is_none() {
+            return Err(AppError::ProjectNotFound(project_path.to_string()));
+        }
+
+        let _ = fs::remove_file(project_dir.join("thumbnail.webp"));
+        let _ = fs::remove_file(project_dir.join("thumbnail.png"));
+
+        let config_path = find_config_file(&project_dir)
+            .ok_or_else(|| AppError::ProjectNotFound(project_path.to_string()))?;
+        let mut mod_project = load_mod_project(&config_path)?;
+        mod_project.thumbnail = None;
+        let json_config_path = project_dir.join("mod.config.json");
+        fs::write(
+            &json_config_path,
+            serde_json::to_string_pretty(&mod_project)?,
+        )?;
+
+        load_workshop_project(&project_dir)
+    }
+
     /// Get a project's thumbnail path (validates it exists).
     pub fn get_thumbnail(&self, thumbnail_path: &str) -> AppResult<String> {
         let path = PathBuf::from(thumbnail_path);

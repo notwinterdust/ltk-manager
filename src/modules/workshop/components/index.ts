@@ -11,6 +11,17 @@ export {
 export { ImportFantomeDialog } from "./ImportFantomeDialog";
 export { ImportGitRepoDialog } from "./ImportGitRepoDialog";
 export { NewProjectDialog } from "./NewProjectDialog";
+export {
+  appendAuthor,
+  AuthorsSection,
+  CategorizationSection,
+  filterEmptyAuthors,
+  parseChampionsText,
+  ProjectInfoSection,
+  removeAuthorAt,
+  ThumbnailSection,
+  updateAuthorAt,
+} from "./overview";
 export { PackDialog } from "./PackDialog";
 export { ProjectCard } from "./ProjectCard";
 export { ProjectProvider, useProjectContext } from "./ProjectContext";
