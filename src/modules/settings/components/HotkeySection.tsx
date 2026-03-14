@@ -11,7 +11,7 @@ interface HotkeySectionProps {
 
 export function HotkeySection({ settings, onSave }: HotkeySectionProps) {
   return (
-    <SectionCard title="Hotkeys">
+    <SectionCard title="Hotkeys" icon={<LuKeyboard className="h-5 w-5" />}>
       <div className="space-y-4">
         <p className="text-sm text-surface-400">
           System-wide keyboard shortcuts that work even when the app is not focused. Useful for
