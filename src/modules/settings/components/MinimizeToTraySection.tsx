@@ -10,7 +10,7 @@ interface MinimizeToTraySectionProps {
 
 export function MinimizeToTraySection({ settings, onSave }: MinimizeToTraySectionProps) {
   return (
-    <SectionCard title="Minimize to Tray" icon={<MonitorDown className="h-5 w-5" />}>
+    <SectionCard title="System Tray" icon={<MonitorDown className="h-5 w-5" />}>
       <div className="space-y-3">
         <label className="flex items-center justify-between gap-4">
           <div>
@@ -25,6 +25,21 @@ export function MinimizeToTraySection({ settings, onSave }: MinimizeToTraySectio
           <Switch
             checked={settings.minimizeToTray}
             onCheckedChange={(checked) => onSave({ ...settings, minimizeToTray: checked })}
+          />
+        </label>
+        <label className="flex items-center justify-between gap-4">
+          <div>
+            <span className="block text-sm font-medium text-surface-200">
+              Start minimized to tray
+            </span>
+            <span className="block text-sm text-surface-400">
+              When enabled, the application will start hidden in the system tray. Double-click the
+              tray icon to open.
+            </span>
+          </div>
+          <Switch
+            checked={settings.startInTray}
+            onCheckedChange={(checked) => onSave({ ...settings, startInTray: checked })}
           />
         </label>
       </div>

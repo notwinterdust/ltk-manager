@@ -166,6 +166,17 @@ fn main() {
                 }
             }
 
+            // Hide the main window on startup if start_in_tray is enabled
+            {
+                let settings_state: tauri::State<'_, SettingsState> = app_handle.state();
+                let settings = settings_state.0.lock().unwrap();
+                if settings.start_in_tray {
+                    if let Some(window) = app_handle.get_webview_window("main") {
+                        let _ = window.hide();
+                    }
+                }
+            }
+
             // Check for deep-link URLs passed at launch
             if let Ok(Some(urls)) = app.deep_link().get_current() {
                 handle_deep_link_urls(app_handle, &urls);

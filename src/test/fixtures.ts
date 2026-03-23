@@ -13,6 +13,7 @@ export function createMockSettings(overrides?: Partial<Settings>): Settings {
     libraryViewMode: "grid",
     patchTft: false,
     minimizeToTray: true,
+    startInTray: false,
     migrationDismissed: false,
     reloadModsHotkey: null,
     killLeagueHotkey: null,

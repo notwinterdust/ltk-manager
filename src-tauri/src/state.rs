@@ -158,6 +158,9 @@ pub struct Settings {
     /// Whether to minimize to system tray instead of taskbar. Default: true.
     #[serde(default = "default_true")]
     pub minimize_to_tray: bool,
+    /// Whether to start the application minimized to the system tray. Default: false.
+    #[serde(default)]
+    pub start_in_tray: bool,
     /// Whether the user has dismissed the cslol-manager migration banner.
     #[serde(default)]
     pub migration_dismissed: bool,
@@ -202,6 +205,7 @@ impl Default for Settings {
             library_view_mode: None,
             patch_tft: false,
             minimize_to_tray: true,
+            start_in_tray: false,
             migration_dismissed: false,
             reload_mods_hotkey: None,
             kill_league_hotkey: None,
@@ -255,6 +259,7 @@ mod tests {
             library_view_mode: Some("list".to_string()),
             patch_tft: true,
             minimize_to_tray: true,
+            start_in_tray: false,
             migration_dismissed: false,
             reload_mods_hotkey: Some("Ctrl+Shift+R".to_string()),
             kill_league_hotkey: None,

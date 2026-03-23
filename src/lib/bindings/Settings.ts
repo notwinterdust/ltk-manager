@@ -40,6 +40,10 @@ export type Settings = {
    */
   minimizeToTray: boolean;
   /**
+   * Whether to start the application minimized to the system tray. Default: false.
+   */
+  startInTray: boolean;
+  /**
    * Whether the user has dismissed the cslol-manager migration banner.
    */
   migrationDismissed: boolean;
