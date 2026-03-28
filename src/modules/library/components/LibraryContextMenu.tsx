@@ -17,7 +17,9 @@ export function LibraryContextMenu({ children }: LibraryContextMenuProps) {
   return (
     <>
       <ContextMenu.Root>
-        <ContextMenu.Trigger>{children}</ContextMenu.Trigger>
+        <ContextMenu.Trigger className="flex min-h-0 flex-1 flex-col">
+          {children}
+        </ContextMenu.Trigger>
         <ContextMenu.Portal>
           <ContextMenu.Positioner>
             <ContextMenu.Popup>
