@@ -2,11 +2,9 @@ import {
   closestCenter,
   type CollisionDetection,
   DndContext,
-  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   pointerWithin,
-  useDroppable,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -16,15 +14,15 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { FolderOutput } from "lucide-react";
 
 import type { InstalledMod } from "@/lib/tauri";
 import { useSortableModDnd } from "@/modules/library/api";
+import { REMOVE_FROM_FOLDER_ID } from "@/modules/library/utils";
 
+import { DndDragOverlay } from "./DndDragOverlay";
 import { ModCard } from "./ModCard";
+import { RemoveFromFolderZone } from "./RemoveFromFolderZone";
 import { SortableModCard } from "./SortableModCard";
-
-const REMOVE_FROM_FOLDER_ID = "remove-from-folder";
 
 /**
  * Checks pointer-within for the remove zone first; if the pointer is
@@ -108,31 +106,7 @@ export function SortableModList({
           ))}
         </div>
       </SortableContext>
-      <DragOverlay dropAnimation={null}>
-        {activeMod && (
-          <div className="scale-[1.02] cursor-grabbing rounded-xl shadow-lg ring-2 ring-accent-500/30">
-            <ModCard mod={activeMod} viewMode={viewMode} onViewDetails={onViewDetails} />
-          </div>
-        )}
-      </DragOverlay>
+      <DndDragOverlay activeMod={activeMod} activeFolder={null} />
     </DndContext>
-  );
-}
-
-function RemoveFromFolderZone({ visible }: { visible: boolean }) {
-  const { setNodeRef, isOver } = useDroppable({ id: REMOVE_FROM_FOLDER_ID });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-dashed transition-all duration-200 ease-out ${
-        visible ? "mb-4 max-h-14 p-4 opacity-100" : "max-h-0 border-transparent p-0 opacity-0"
-      } ${
-        isOver ? "border-red-500 bg-red-500/10 text-red-400" : "border-surface-600 text-surface-400"
-      }`}
-    >
-      <FolderOutput className="h-5 w-5 shrink-0" />
-      <span className="text-sm font-medium whitespace-nowrap">Drop here to remove from folder</span>
-    </div>
   );
 }

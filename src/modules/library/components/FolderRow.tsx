@@ -1,4 +1,6 @@
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { ChevronDown, ChevronRight, FolderOpen } from "lucide-react";
+import { useMemo } from "react";
 
 import { Button, Checkbox } from "@/components";
 import type { InstalledMod, LibraryFolder } from "@/lib/tauri";
@@ -7,18 +9,21 @@ import { useLibraryViewStore } from "@/stores/libraryView";
 
 import { FolderContextMenu } from "./FolderContextMenu";
 import { ModCard } from "./ModCard";
+import { SortableModCard } from "./SortableModCard";
 
 interface FolderRowProps {
   folder: LibraryFolder;
   mods: InstalledMod[];
+  dndDisabled?: boolean;
   onViewDetails?: (mod: InstalledMod) => void;
 }
 
-export function FolderRow({ folder, mods, onViewDetails }: FolderRowProps) {
+export function FolderRow({ folder, mods, dndDisabled = true, onViewDetails }: FolderRowProps) {
   const expandedFolders = useLibraryViewStore((s) => s.expandedFolders);
   const toggleFolderExpanded = useLibraryViewStore((s) => s.toggleFolderExpanded);
   const isExpanded = expandedFolders.has(folder.id);
   const { handleToggle, checked, indeterminate } = useFolderToggle(folder, mods);
+  const modIds = useMemo(() => mods.map((m) => m.id), [mods]);
 
   return (
     <div>
@@ -52,10 +57,27 @@ export function FolderRow({ folder, mods, onViewDetails }: FolderRowProps) {
       {isExpanded && (
         <div className="ml-[22px] flex rounded-lg bg-surface-800/50 py-1">
           <div className="mr-2.5 w-px shrink-0 bg-surface-600" />
-          <div className="flex min-w-0 flex-1 flex-col gap-2 py-1 pr-1">
-            {mods.map((mod) => (
-              <ModCard key={mod.id} mod={mod} viewMode="list" onViewDetails={onViewDetails} />
-            ))}
+          <div className="min-w-0 flex-1 py-1 pr-1">
+            {dndDisabled ? (
+              <div className="flex flex-col gap-2">
+                {mods.map((mod) => (
+                  <ModCard key={mod.id} mod={mod} viewMode="list" onViewDetails={onViewDetails} />
+                ))}
+              </div>
+            ) : (
+              <SortableContext items={modIds} strategy={verticalListSortingStrategy}>
+                <div className="flex flex-col gap-2">
+                  {mods.map((mod) => (
+                    <SortableModCard
+                      key={mod.id}
+                      mod={mod}
+                      viewMode="list"
+                      onViewDetails={onViewDetails}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            )}
           </div>
         </div>
       )}

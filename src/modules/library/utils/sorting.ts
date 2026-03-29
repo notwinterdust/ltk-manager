@@ -1,4 +1,4 @@
-import type { InstalledMod } from "@/lib/tauri";
+import type { InstalledMod, LibraryFolder } from "@/lib/tauri";
 import type { SortConfig } from "@/stores/libraryFilter";
 
 export function sortMods(mods: InstalledMod[], sort: SortConfig): InstalledMod[] {
@@ -22,6 +22,13 @@ export function sortMods(mods: InstalledMod[], sort: SortConfig): InstalledMod[]
   });
 
   return sorted;
+}
+
+export function sortFolders(folders: LibraryFolder[], sort: SortConfig): LibraryFolder[] {
+  if (sort.field !== "name") return folders;
+
+  const dir = sort.direction === "asc" ? 1 : -1;
+  return [...folders].sort((a, b) => dir * a.name.localeCompare(b.name));
 }
 
 export function sortModsByFolder(
