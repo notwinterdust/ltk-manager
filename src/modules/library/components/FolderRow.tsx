@@ -29,7 +29,7 @@ export function FolderRow({ folder, mods, dndDisabled = true, onViewDetails }: F
     <div>
       <FolderContextMenu folderId={folder.id} folderName={folder.name}>
         <Button
-          variant="light"
+          variant="default"
           onClick={() => toggleFolderExpanded(folder.id)}
           className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left"
         >
@@ -58,7 +58,11 @@ export function FolderRow({ folder, mods, dndDisabled = true, onViewDetails }: F
         <div className="ml-[22px] flex rounded-lg bg-surface-800/50 py-1">
           <div className="mr-2.5 w-px shrink-0 bg-surface-600" />
           <div className="min-w-0 flex-1 py-1 pr-1">
-            {dndDisabled ? (
+            {mods.length === 0 ? (
+              <p className="py-3 text-center text-sm text-surface-500">
+                No mods in this folder. Drag mods here to organize them.
+              </p>
+            ) : dndDisabled ? (
               <div className="flex flex-col gap-2">
                 {mods.map((mod) => (
                   <ModCard key={mod.id} mod={mod} viewMode="list" onViewDetails={onViewDetails} />

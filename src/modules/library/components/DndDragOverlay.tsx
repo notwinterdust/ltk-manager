@@ -5,15 +5,17 @@ import { FolderOpen } from "lucide-react";
 import type { InstalledMod, LibraryFolder } from "@/lib/tauri";
 
 const snapCenterToCursor: Modifier = ({ activatorEvent, draggingNodeRect, transform }) => {
-  if (activatorEvent && draggingNodeRect) {
-    const event = activatorEvent as PointerEvent;
-    return {
-      ...transform,
-      x: transform.x + event.clientX - draggingNodeRect.left - draggingNodeRect.width / 2,
-      y: transform.y + event.clientY - draggingNodeRect.top - draggingNodeRect.height / 2,
-    };
-  }
-  return transform;
+  if (!activatorEvent || !draggingNodeRect) return transform;
+
+  const event = activatorEvent as { clientX?: number; clientY?: number };
+  const { clientX, clientY } = event;
+  if (typeof clientX !== "number" || typeof clientY !== "number") return transform;
+
+  return {
+    ...transform,
+    x: transform.x + clientX - draggingNodeRect.left - draggingNodeRect.width / 2,
+    y: transform.y + clientY - draggingNodeRect.top - draggingNodeRect.height / 2,
+  };
 };
 
 interface DndDragOverlayProps {
