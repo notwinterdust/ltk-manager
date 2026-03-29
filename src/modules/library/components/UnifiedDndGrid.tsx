@@ -1,12 +1,4 @@
-import {
-  closestCenter,
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import {
   rectSortingStrategy,
   SortableContext,
@@ -15,19 +7,19 @@ import {
 } from "@dnd-kit/sortable";
 
 import type { InstalledMod, LibraryFolder } from "@/lib/tauri";
-import { useRootModDnd } from "@/modules/library/api";
+import { useUnifiedDnd } from "@/modules/library/api";
+import { gridClass, parseSortableFolderId } from "@/modules/library/utils";
 
-import { DroppableFolderCard } from "./DroppableFolderCard";
-import { DroppableFolderRow } from "./DroppableFolderRow";
+import { DndDragOverlay } from "./DndDragOverlay";
 import { FolderCard } from "./FolderCard";
 import { FolderRow } from "./FolderRow";
 import { ModCard } from "./ModCard";
+import { RemoveFromFolderZone } from "./RemoveFromFolderZone";
+import { SortableFolderCard } from "./SortableFolderCard";
+import { SortableFolderRow } from "./SortableFolderRow";
 import { SortableModCard } from "./SortableModCard";
 
-export function gridClass(viewMode: "grid" | "list") {
-  if (viewMode === "list") return "space-y-2";
-  return "grid grid-cols-[repeat(auto-fill,minmax(var(--card-min-w,240px),var(--card-max-w,320px)))] justify-center gap-4";
-}
+export { gridClass } from "@/modules/library/utils";
 
 interface UnifiedDndGridProps {
   folders: LibraryFolder[];
@@ -48,72 +40,142 @@ export function UnifiedDndGrid({
   onReorder,
   onViewDetails,
 }: UnifiedDndGridProps) {
+  if (dndDisabled) {
+    return (
+      <StaticGrid
+        folders={folders}
+        rootMods={rootMods}
+        modsByFolder={modsByFolder}
+        viewMode={viewMode}
+        onViewDetails={onViewDetails}
+      />
+    );
+  }
+
+  return (
+    <DndGrid
+      folders={folders}
+      rootMods={rootMods}
+      modsByFolder={modsByFolder}
+      viewMode={viewMode}
+      onReorder={onReorder}
+      onViewDetails={onViewDetails}
+    />
+  );
+}
+
+interface StaticGridProps {
+  folders: LibraryFolder[];
+  rootMods: InstalledMod[];
+  modsByFolder: Map<string, InstalledMod[]>;
+  viewMode: "grid" | "list";
+  onViewDetails?: (mod: InstalledMod) => void;
+}
+
+function StaticGrid({ folders, rootMods, modsByFolder, viewMode, onViewDetails }: StaticGridProps) {
+  return (
+    <div className={`${gridClass(viewMode)} stagger-enter`}>
+      {folders.map((folder) => {
+        const folderMods = modsByFolder.get(folder.id) ?? [];
+        if (viewMode === "list") {
+          return (
+            <FolderRow
+              key={folder.id}
+              folder={folder}
+              mods={folderMods}
+              dndDisabled
+              onViewDetails={onViewDetails}
+            />
+          );
+        }
+        return <FolderCard key={folder.id} folder={folder} mods={folderMods} />;
+      })}
+      {rootMods.map((mod) => (
+        <ModCard key={mod.id} mod={mod} viewMode={viewMode} onViewDetails={onViewDetails} />
+      ))}
+    </div>
+  );
+}
+
+interface DndGridProps {
+  folders: LibraryFolder[];
+  rootMods: InstalledMod[];
+  modsByFolder: Map<string, InstalledMod[]>;
+  viewMode: "grid" | "list";
+  onReorder: (modIds: string[]) => void;
+  onViewDetails?: (mod: InstalledMod) => void;
+}
+
+function DndGrid({
+  folders,
+  rootMods,
+  modsByFolder,
+  viewMode,
+  onReorder,
+  onViewDetails,
+}: DndGridProps) {
   const {
-    localOrder,
+    folderLocalOrder,
     orderedRootMods,
-    activeMod,
+    activeFolder,
+    activeModForOverlay,
+    isDraggingMod,
+    isDraggingFolderMod,
+    sortableItems,
+    collisionDetection,
     handleDragStart,
     handleDragOver,
     handleDragEnd,
     handleDragCancel,
-  } = useRootModDnd({ rootMods, onReorder });
+  } = useUnifiedDnd({ folders, rootMods, modsByFolder, onReorder });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  if (dndDisabled) {
-    return (
-      <div className={`${gridClass(viewMode)} stagger-enter`}>
-        {folders.map((folder) => {
-          const folderMods = modsByFolder.get(folder.id) ?? [];
-          if (viewMode === "list") {
-            return (
-              <FolderRow
-                key={folder.id}
-                folder={folder}
-                mods={folderMods}
-                onViewDetails={onViewDetails}
-              />
-            );
-          }
-          return <FolderCard key={folder.id} folder={folder} mods={folderMods} />;
-        })}
-        {rootMods.map((mod) => (
-          <ModCard key={mod.id} mod={mod} viewMode={viewMode} onViewDetails={onViewDetails} />
-        ))}
-      </div>
-    );
-  }
-
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCenter}
+      collisionDetection={collisionDetection}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
       <SortableContext
-        items={localOrder}
+        items={sortableItems}
         strategy={viewMode === "list" ? verticalListSortingStrategy : rectSortingStrategy}
       >
-        <div className={`${gridClass(viewMode)} stagger-enter`}>
-          {folders.map((folder) => {
+        <div className={gridClass(viewMode)}>
+          {folderLocalOrder.map((sortableId) => {
+            const folderId = parseSortableFolderId(sortableId);
+            if (!folderId) return null;
+            const folder = folders.find((f) => f.id === folderId);
+            if (!folder) return null;
             const folderMods = modsByFolder.get(folder.id) ?? [];
+
             if (viewMode === "list") {
               return (
-                <DroppableFolderRow
-                  key={folder.id}
+                <SortableFolderRow
+                  key={sortableId}
+                  sortableId={sortableId}
                   folder={folder}
                   mods={folderMods}
+                  sortDisabled={isDraggingMod || isDraggingFolderMod}
                   onViewDetails={onViewDetails}
                 />
               );
             }
-            return <DroppableFolderCard key={folder.id} folder={folder} mods={folderMods} />;
+            return (
+              <SortableFolderCard
+                key={sortableId}
+                sortableId={sortableId}
+                folder={folder}
+                mods={folderMods}
+                sortDisabled={isDraggingMod || isDraggingFolderMod}
+              />
+            );
           })}
 
           {orderedRootMods.map((mod) => (
@@ -127,13 +189,8 @@ export function UnifiedDndGrid({
         </div>
       </SortableContext>
 
-      <DragOverlay dropAnimation={null}>
-        {activeMod && (
-          <div className="scale-[1.02] cursor-grabbing rounded-xl shadow-lg ring-2 ring-accent-500/30">
-            <ModCard mod={activeMod} viewMode={viewMode} onViewDetails={onViewDetails} />
-          </div>
-        )}
-      </DragOverlay>
+      <RemoveFromFolderZone visible={isDraggingFolderMod} />
+      <DndDragOverlay activeMod={activeModForOverlay} activeFolder={activeFolder} />
     </DndContext>
   );
 }

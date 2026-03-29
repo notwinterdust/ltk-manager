@@ -3,10 +3,10 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { InstalledMod } from "@/lib/tauri";
+import { REMOVE_FROM_FOLDER_ID } from "@/modules/library/utils";
 
 import { useMoveModToFolder } from "./useMoveMod";
 
-const REMOVE_FROM_FOLDER_ID = "remove-from-folder";
 const ROOT_FOLDER_ID = "root";
 
 interface UseSortableModDndArgs {

@@ -6,6 +6,7 @@ export { useEnableModWithLayers } from "./useEnableModWithLayers";
 export { useFilteredMods } from "./useFilteredMods";
 export type { FilterOptions } from "./useFilterOptions";
 export { useFilterOptions } from "./useFilterOptions";
+export { useFolderDnd } from "./useFolderDnd";
 export {
   useCreateFolder,
   useDeleteFolder,
@@ -29,6 +30,7 @@ export { useSetModLayers } from "./useSetModLayers";
 export { useSortableModDnd } from "./useSortableModDnd";
 export { useSwitchProfile } from "./useSwitchProfile";
 export { useToggleMod } from "./useToggleMod";
+export { useUnifiedDnd } from "./useUnifiedDnd";
 export { useUninstallMod } from "./useUninstallMod";
 
 // Query options and hooks

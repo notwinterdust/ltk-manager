@@ -3,7 +3,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { InstalledMod } from "@/lib/tauri";
-import { hasOrderChanged, parseFolderDropId } from "@/modules/library/utils";
+import { hasOrderChanged, resolveFolderId } from "@/modules/library/utils";
 
 import { useMoveModToFolder } from "./useMoveMod";
 
@@ -45,7 +45,7 @@ export function useRootModDnd({ rootMods, onReorder }: UseRootModDndArgs) {
     if (!over || active.id === over.id) return;
 
     const overId = over.id as string;
-    if (parseFolderDropId(overId)) return;
+    if (resolveFolderId(overId)) return;
 
     setLocalOrder((prev) => {
       const oldIndex = prev.indexOf(active.id as string);
@@ -61,7 +61,7 @@ export function useRootModDnd({ rootMods, onReorder }: UseRootModDndArgs) {
       setActiveId(null);
 
       if (over) {
-        const folderId = parseFolderDropId(over.id as string);
+        const folderId = resolveFolderId(over.id as string);
         if (folderId) {
           moveModToFolder.mutate({ modId: active.id as string, folderId });
           return;

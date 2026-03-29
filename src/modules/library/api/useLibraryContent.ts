@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { InstalledMod, LibraryFolder } from "@/lib/tauri";
-import { sortModsByFolder } from "@/modules/library/utils";
+import { sortFolders, sortModsByFolder } from "@/modules/library/utils";
 import { usePatcherStatus } from "@/modules/patcher";
 import { useHasActiveFilters, useLibraryFilterStore } from "@/stores";
 import { useLibraryViewStore } from "@/stores/libraryView";
@@ -70,11 +70,12 @@ export function useLibraryContent({
 
   const orderedUserFolders = useMemo(() => {
     if (!folderOrder || !folders) return [];
-    return folderOrder
+    const manualOrder = folderOrder
       .filter((id) => id !== ROOT_FOLDER_ID)
       .map((id) => folderMap.get(id))
       .filter(Boolean) as LibraryFolder[];
-  }, [folderOrder, folders, folderMap]);
+    return sortFolders(manualOrder, sort);
+  }, [folderOrder, folders, folderMap, sort]);
 
   const modsByFolder = useMemo(() => {
     const map = new Map<string, InstalledMod[]>();
