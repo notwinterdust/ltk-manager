@@ -3,6 +3,7 @@ import { useState } from "react";
 
 import { useToast } from "@/components";
 import { api, type BulkInstallResult, unwrap } from "@/lib/tauri";
+import { checkModForSkinhack } from "@/modules/library/utils/skinhackCheck";
 
 import { useBulkInstallMods } from "./useBulkInstallMods";
 import { useInstallMod } from "./useInstallMod";
@@ -64,6 +65,15 @@ export function useLibraryActions() {
     bulkInstallMods.mutate(filePaths, {
       onSuccess: (result) => {
         setImportResult(result);
+
+        // Check installed mods for skinhacks and disable any flagged ones
+        for (const mod of result.installed) {
+          const flag = checkModForSkinhack(mod);
+          if (flag) {
+            api.toggleMod(mod.id, false);
+            toast.warning("Skinhack Detected", `Skinhack detected in "${mod.displayName}"`);
+          }
+        }
 
         if (result.failed.length === 0) {
           toast.success(
